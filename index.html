@@ -1,0 +1,1105 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Worksheet Studio</title>
+<meta name="description" content="Fichas de práctica de tiempos verbales en inglés para clases individuales con adultos.">
+<meta name="theme-color" content="#2b4fd8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Caveat:wght@600&display=swap">
+<style>
+/* Layout: control desk on the left, the worksheet as a sheet of paper on the right; class mode turns the sheet into one big card per item */
+:root {
+  --bg: #eef1f6;
+  --paper: #ffffff;
+  --ink: #1b2440;
+  --muted: #5d6784;
+  --line: #d5dbe8;
+  --rule: #c9d6f0;
+  --accent: #2b4fd8;
+  --accent-ink: #ffffff;
+  --pen: #d23a2a;
+  --soft: #e4e9f7;
+  --ok: #1f8a4c;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --hand: "Caveat", "Segoe Print", "Comic Sans MS", cursive;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111526; --paper: #1a2036; --ink: #e6e9f4; --muted: #9aa3c0; --line: #2d3552; --rule: #2a3560;
+  --accent: #7d98ff; --accent-ink: #0d1124; --pen: #ff7a68; --soft: #232b48; --ok: #5fd08f; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111526; --paper: #1a2036; --ink: #e6e9f4; --muted: #9aa3c0; --line: #2d3552; --rule: #2a3560;
+  --accent: #7d98ff; --accent-ink: #0d1124; --pen: #ff7a68; --soft: #232b48; --ok: #5fd08f; color-scheme: dark }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.5; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 24px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header.top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+h1 { font-family: var(--display); font-weight: 800; font-size: clamp(26px, 4vw, 36px); margin: 0; letter-spacing: -0.02em; text-wrap: balance; }
+h1 span { color: var(--accent); }
+.tag { color: var(--muted); font-size: 14px; margin: 2px 0 0; }
+.grid { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 860px) { .grid { grid-template-columns: 1fr; } .main { order: -1; } }
+
+/* Control desk */
+.desk { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+.gen { display: flex; flex-direction: column; gap: 16px; }
+.lib { display: flex; flex-direction: column; gap: 10px; }
+.lib-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.lib-head h2 { font-family: var(--display); font-size: 19px; margin: 0; }
+.lib-head span { font-size: 13px; color: var(--muted); }
+.lib-group { display: flex; flex-direction: column; gap: 2px; }
+.lib-group > .lbl { margin: 6px 0 2px; }
+.lib-row { display: flex; align-items: stretch; gap: 4px; }
+.lib-item { flex: 1; min-width: 0; text-align: left; font: inherit; font-size: 15px; background: none; border: 1px solid transparent; border-radius: 8px; color: var(--ink); padding: 7px 10px; cursor: pointer; }
+.lib-item:hover { border-color: var(--line); background: var(--paper); }
+.lib-item[aria-current=true] { background: var(--paper); border-color: var(--accent); }
+.lib-item small { display: block; color: var(--muted); font-size: 13px; }
+.lib-del { font: inherit; font-size: 13px; background: none; border: 1px solid transparent; border-radius: 8px; color: var(--muted); padding: 0 10px; cursor: pointer; flex: none; }
+.lib-del:hover { color: var(--pen); border-color: var(--line); }
+.lib-del.confirm { color: var(--accent-ink); background: var(--pen); border-color: var(--pen); }
+.lib-empty { color: var(--muted); font-size: 14px; margin: 0; border: 1.5px dashed var(--line); border-radius: 8px; padding: 12px; }
+.save-note { font-size: 14px; color: var(--muted); margin: 0; }
+.save-note.err { color: var(--pen); }
+.btn.save { border-color: var(--accent); color: var(--accent); font-weight: 700; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.lbl { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+input[type=text], select, textarea { font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; width: 100%; }
+textarea { resize: vertical; min-height: 60px; }
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: inherit; font-size: 13px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 999px; padding: 4px 10px; cursor: pointer; }
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+.levels { display: grid; grid-template-columns: repeat(6, 1fr); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--paper); }
+.levels label { position: relative; text-align: center; cursor: pointer; }
+.levels input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.levels span { display: block; padding: 8px 0; font-family: var(--display); font-weight: 700; font-size: 15px; border-left: 1px solid var(--line); }
+.levels label:first-child span { border-left: 0; }
+.levels input:checked + span { background: var(--accent); color: var(--accent-ink); }
+.levels input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: -3px; }
+.lvl-hint { font-size: 13px; color: var(--muted); margin: 0; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn { font: inherit; font-weight: 700; border-radius: 8px; padding: 10px 16px; cursor: pointer; border: 1px solid var(--line); background: var(--paper); color: var(--ink); }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-family: var(--display); font-size: 17px; padding: 12px 16px; }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.status { font-size: 14px; color: var(--muted); min-height: 1.5em; margin: 0; }
+.status.err { color: var(--pen); }
+.history { border-top: 1px solid var(--line); padding-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+.history button { text-align: left; font: inherit; font-size: 14px; background: none; border: 0; color: var(--accent); cursor: pointer; padding: 2px 0; }
+.history button small { color: var(--muted); }
+
+/* Toolbar + sheet */
+.main { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--paper); }
+.seg button { font: inherit; font-size: 14px; border: 0; background: none; color: var(--ink); padding: 7px 12px; cursor: pointer; }
+.seg button[aria-pressed=true] { background: var(--soft); color: var(--accent); font-weight: 700; }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; }
+.tools .btn { font-size: 14px; padding: 7px 12px; font-weight: 400; }
+.sheet { background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: clamp(20px, 4vw, 44px); box-shadow: 0 1px 0 var(--line), 0 12px 30px -18px rgba(20, 30, 70, .35); position: relative; }
+.sheet::before { content: ""; position: absolute; top: 0; bottom: 0; left: clamp(10px, 2vw, 22px); width: 2px; background: var(--pen); opacity: .35; }
+.sample-flag { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--pen); border: 1px dashed var(--pen); border-radius: 4px; padding: 2px 8px; margin-bottom: 14px; }
+.meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.pill { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; background: var(--soft); color: var(--accent); border-radius: 999px; padding: 3px 10px; }
+.sheet h2 { font-family: var(--display); font-weight: 700; font-size: clamp(22px, 3vw, 30px); margin: 0 0 6px; letter-spacing: -0.01em; text-wrap: balance; }
+.name-line { display: flex; gap: 24px; flex-wrap: wrap; color: var(--muted); font-size: 14px; margin: 10px 0 18px; }
+.name-line span { flex: 1 1 160px; border-bottom: 1px solid var(--rule); padding-bottom: 2px; }
+.instr { font-style: italic; margin: 0 0 18px; }
+.theory { border: 1.5px solid var(--rule); border-radius: 8px; padding: 14px 18px; margin: 0 0 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px 24px; }
+.theory h3 { grid-column: 1 / -1; margin: 0; font-family: var(--display); font-size: 15px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+.theory h4 { margin: 0 0 4px; font-size: 15px; }
+.theory ul { margin: 0; padding-left: 1.1em; font-size: 15px; }
+.theory li { margin: 2px 0; }
+.check { display: flex; gap: 8px; align-items: center; font-size: 15px; cursor: pointer; }
+.check input { width: 18px; height: 18px; accent-color: var(--accent); flex: none; }
+.reading { background: var(--soft); border-radius: 6px; padding: 14px 16px; margin: 0 0 20px; white-space: pre-wrap; }
+.bank { border: 1.5px dashed var(--rule); border-radius: 6px; padding: 10px 14px; margin: 0 0 20px; display: flex; flex-wrap: wrap; gap: 6px 16px; font-weight: 700; }
+.bank b { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); width: 100%; }
+ol.items { margin: 0; padding-left: 1.8em; display: flex; flex-direction: column; gap: 16px; }
+ol.items li { padding-left: 4px; }
+ol.items li::marker { font-family: var(--display); font-weight: 700; color: var(--accent); }
+.opts { list-style: none; padding: 0; margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.opts li { padding: 0; }
+.opt { font: inherit; background: none; border: 1px solid transparent; border-radius: 6px; color: var(--ink); padding: 2px 8px; margin-left: -8px; cursor: pointer; text-align: left; }
+.opt:hover { border-color: var(--line); }
+.opt.right { border-color: var(--ok); color: var(--ok); font-weight: 700; }
+.opt.wrong { border-color: var(--pen); color: var(--pen); text-decoration: line-through; }
+.key { font-family: var(--hand); font-size: 22px; line-height: 1.2; color: var(--pen); margin-top: 2px; }
+.key small { font-family: var(--body); font-size: 13px; color: var(--muted); display: block; line-height: 1.4; }
+.fix { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 6px 20px; align-items: start; }
+@media (max-width: 640px) { .fix { grid-template-columns: 1fr; } }
+.fix-q { padding-top: 7px; }
+.fix-box { display: flex; gap: 6px; min-width: 0; }
+.fix-box input { flex: 1; min-width: 0; padding: 6px 10px; }
+.fix-box .btn { padding: 6px 12px; font-size: 14px; flex: none; }
+.fix-box input.right { border-color: var(--ok); }
+.fix-box input.wrong { border-color: var(--pen); }
+.fix-msg { grid-column: 2; font-size: 14px; }
+.fix-msg:empty { display: none; }
+@media (max-width: 640px) { .fix-msg { grid-column: 1; } }
+.fix-msg.right { color: var(--ok); font-weight: 700; }
+.fix-msg.wrong { color: var(--pen); }
+.stage .fix { grid-template-columns: 1fr; }
+.stage .fix-msg { grid-column: 1; font-size: 18px; }
+.stage .fix-box input { font-size: clamp(18px, 2.4vw, 24px); padding: 10px 14px; }
+.match { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px 24px; }
+.match ol { margin: 0; padding-left: 1.6em; display: flex; flex-direction: column; gap: 8px; }
+.match ol.abc { list-style: upper-alpha; }
+.foot { margin-top: 26px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+
+/* Class mode */
+.stage { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: clamp(24px, 5vw, 56px); min-height: 380px; display: flex; flex-direction: column; gap: 20px; }
+.stage .count { font-family: var(--display); font-weight: 700; color: var(--muted); font-size: 15px; }
+.stage .q { font-size: clamp(24px, 3.6vw, 40px); line-height: 1.3; font-weight: 700; text-wrap: balance; }
+.stage .opts { gap: 10px; }
+.stage .opt { font-size: clamp(18px, 2.4vw, 26px); border: 1.5px solid var(--line); padding: 8px 18px; margin: 0; }
+.stage .key { font-size: clamp(30px, 4vw, 44px); }
+.stage .key small { font-size: 16px; }
+.stage-nav { display: flex; gap: 10px; flex-wrap: wrap; margin-top: auto; }
+.empty { color: var(--muted); }
+.spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -1px; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+.top .btn { padding: 7px 12px; font-size: 14px; }
+.who { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.who-mail { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+.signin { max-width: 420px; margin: 0 auto 24px; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+.signin h2 { font-family: var(--display); font-size: 20px; margin: 0; }
+.signin p { margin: 0; color: var(--muted); font-size: 14px; }
+.signin .row { display: flex; gap: 8px; flex-wrap: wrap; }
+.signin .row .btn { flex: 1 1 auto; }
+.auth-msg { font-size: 14px; border-radius: 8px; padding: 8px 10px; margin: 0; }
+.auth-msg.err { color: var(--pen); background: var(--soft); }
+.auth-msg.ok { color: var(--ok); background: var(--soft); }
+.ai-steps { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--line); padding-top: 16px; }
+.step-t { margin: 0; font-size: 14px; }
+.step-t b { font-family: var(--display); color: var(--accent); margin-right: 4px; }
+.ai-links { display: flex; gap: 6px 14px; flex-wrap: wrap; font-size: 14px; }
+.ai-links a { color: var(--accent); font-weight: 700; }
+.lib-sec { display: flex; flex-direction: column; gap: 4px; }
+.lib-sec + .lib-sec { margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Worksheet <span>Studio</span></h1>
+      <p class="tag" id="tagline">Fichas de práctica de tiempos verbales en inglés.</p>
+    </div>
+    <div class="who">
+      <button class="btn" type="button" id="teacherBtn">Ingresar (profesora)</button>
+      <span class="who-mail" id="whoMail" hidden></span>
+      <button class="btn" type="button" id="logout" hidden>Cerrar sesión</button>
+    </div>
+  </header>
+
+  <section class="signin" id="signin" hidden aria-labelledby="signinT">
+    <h2 id="signinT">Ingreso de la profesora</h2>
+    <p id="signinNote">Los alumnos no necesitan cuenta: solo abren el link.</p>
+    <form id="authForm" novalidate>
+      <div class="gen">
+        <div class="field"><label class="lbl" for="aEmail">Correo</label><input type="text" id="aEmail" inputmode="email" autocomplete="email" autocapitalize="off"></div>
+        <div class="field" id="passField"><label class="lbl" for="aPass">Contraseña</label><input type="password" id="aPass" autocomplete="current-password" style="font: inherit; border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; background: var(--paper); color: var(--ink);"></div>
+        <p class="auth-msg" id="authMsg" hidden></p>
+        <div class="row">
+          <button class="btn primary" type="submit" id="authGo">Ingresar</button>
+          <button class="btn" type="button" id="authCancel">Cancelar</button>
+        </div>
+        <button class="btn" type="button" id="authReset">Olvidé mi contraseña</button>
+      </div>
+    </form>
+  </section>
+
+  <div class="grid">
+    <aside class="desk">
+    <form class="gen" id="form" autocomplete="off" hidden>
+      <div class="field">
+        <label class="lbl" for="topic">Tiempo verbal</label>
+        <input type="text" id="topic" value="Present perfect vs past simple" required>
+        <div class="chips" id="topicChips"></div>
+      </div>
+
+      <div class="field">
+        <span class="lbl" id="lvlLbl">Nivel (MCER)</span>
+        <div class="levels" role="radiogroup" aria-labelledby="lvlLbl" id="levels"></div>
+        <p class="lvl-hint" id="lvlHint"></p>
+      </div>
+
+      <div class="field">
+        <label class="lbl" for="type">Tipo de ejercicio</label>
+        <select id="type"></select>
+      </div>
+
+      <div class="field">
+        <label class="lbl" for="context">Contexto o temática (opcional)</label>
+        <input type="text" id="context" value="Trabajo y reuniones" placeholder="Ej.: su trabajo en minería, viaje a Londres">
+        <div class="chips" id="ctxChips"></div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label class="lbl" for="count">Preguntas</label>
+          <select id="count"><option>5</option><option>6</option><option selected>8</option><option>10</option><option>12</option><option>15</option></select>
+        </div>
+        <div class="field">
+          <label class="lbl" for="lang">Instrucciones en</label>
+          <select id="lang"><option value="en">Inglés</option><option value="es">Español</option></select>
+        </div>
+      </div>
+
+      <label class="check" for="theory"><input type="checkbox" id="theory" checked> Incluir recuadro de teoría (forma, usos, errores típicos)</label>
+
+      <div class="field">
+        <label class="lbl" for="notes">Indicaciones extra (opcional)</label>
+        <textarea id="notes" placeholder="Ej.: trabaja en minería, confunde did y have, prepara una entrevista en inglés"></textarea>
+      </div>
+
+      <div class="ai-steps">
+        <p class="step-t"><b>1</b>Copia las instrucciones y pégalas en una IA gratuita.</p>
+        <button class="btn primary" type="submit" id="go">Copiar instrucciones para la IA</button>
+        <div class="ai-links">
+          <a href="https://chatgpt.com/" target="_blank" rel="noopener">Abrir ChatGPT</a>
+          <a href="https://claude.ai/new" target="_blank" rel="noopener">Abrir Claude</a>
+          <a href="https://gemini.google.com/app" target="_blank" rel="noopener">Abrir Gemini</a>
+        </div>
+        <p class="step-t"><b>2</b>Copia la respuesta completa de la IA y pégala aquí.</p>
+        <label class="lbl" for="paste">Respuesta de la IA</label>
+        <textarea id="paste" rows="5" placeholder="Pega aquí la respuesta completa (empieza con {)"></textarea>
+        <button class="btn" type="button" id="make">Crear ficha</button>
+        <p class="status" id="status" role="status"></p>
+      </div>
+
+      <div class="history" id="history" hidden>
+        <span class="lbl">Fichas sin guardar (este navegador)</span>
+        <div id="historyList"></div>
+      </div>
+    </form>
+
+    <nav class="lib" aria-labelledby="libTitle">
+      <div class="lib-head"><h2 id="libTitle">Biblioteca</h2><span id="libCount"></span></div>
+      <div id="libList"></div>
+    </nav>
+    </aside>
+
+    <section class="main" aria-live="polite">
+      <div class="toolbar">
+        <div class="seg" role="group" aria-label="Vista">
+          <button type="button" id="vSheet" aria-pressed="true">Hoja del alumno</button>
+          <button type="button" id="vKey" aria-pressed="false" hidden>Con respuestas</button>
+          <button type="button" id="vClass" aria-pressed="false">Modo clase</button>
+        </div>
+        <div class="tools">
+          <button class="btn save" type="button" id="save" hidden>Guardar en biblioteca</button>
+          <button class="btn" type="button" id="copyLink" hidden>Copiar link para alumno</button>
+          <button class="btn" type="button" id="copyStudent">Copiar hoja</button>
+          <button class="btn" type="button" id="copyKey" hidden>Copiar solucionario</button>
+          <button class="btn" type="button" id="dl">Descargar</button>
+        </div>
+      </div>
+      <p class="save-note" id="saveNote" hidden></p>
+      <div id="out"></div>
+    </section>
+  </div>
+</div>
+
+<script>
+(() => {
+  const LEVELS = {
+    A1: "Principiante: frases muy simples y vocabulario cotidiano.",
+    A2: "Básico: rutinas, pasado simple, descripciones cortas.",
+    B1: "Intermedio: experiencias, planes, opiniones simples.",
+    B2: "Intermedio alto: argumentos, matices, textos más largos.",
+    C1: "Avanzado: lenguaje idiomático y estructuras complejas.",
+    C2: "Maestría: precisión casi nativa."
+  };
+  const TYPES = [
+    ["guide", "Ficha de estudio (teoría + práctica breve)"],
+    ["fill", "Completar espacios (fill in the blanks)"],
+    ["mc", "Selección múltiple"],
+    ["bank", "Completar con banco de palabras"],
+    ["rewrite", "Reescribir oraciones (transformación)"],
+    ["error", "Corregir el error"],
+    ["order", "Ordenar palabras"],
+    ["match", "Unir columnas"],
+    ["reading", "Comprensión lectora"]
+  ];
+  const TOPICS = ["Present simple vs continuous", "Past simple vs past continuous", "Present perfect vs past simple", "Present perfect continuous", "Past perfect", "Future: will / going to / present continuous", "Used to / would", "Mixed tenses review"];
+  const CONTEXTS = ["Trabajo y reuniones", "Correos formales", "Entrevista de trabajo", "Viajes", "Salud", "Vida familiar", "Noticias"];
+
+  const $ = id => document.getElementById(id);
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+
+  // Build controls
+  const levels = $("levels");
+  Object.keys(LEVELS).forEach(k => {
+    const l = el("label"); const i = el("input"); i.type = "radio"; i.name = "level"; i.value = k; i.id = "lvl-" + k;
+    if (k === "B1") i.checked = true;
+    i.addEventListener("change", () => $("lvlHint").textContent = LEVELS[k]);
+    l.append(i, el("span", null, k)); levels.append(l);
+  });
+  $("lvlHint").textContent = LEVELS.B1;
+  TYPES.forEach(([v, t]) => { const o = el("option", null, t); o.value = v; $("type").append(o); });
+  $("type").value = "mc";
+  TOPICS.forEach(t => { const b = el("button", "chip", t); b.type = "button"; b.onclick = () => { $("topic").value = t; $("topic").focus(); }; $("topicChips").append(b); });
+  CONTEXTS.forEach(t => { const b = el("button", "chip", t); b.type = "button"; b.onclick = () => { $("context").value = t; $("context").focus(); }; $("ctxChips").append(b); });
+
+  // Ready-made worksheets that ship with the page, so students have material from day one
+  const T_PS_PC = "Present simple vs continuous", T_PAST = "Past simple vs past continuous", T_PP = "Present perfect vs past simple",
+    T_PPC = "Present perfect continuous", T_PPERF = "Past perfect", T_FUT = "Future: will / going to / present continuous",
+    T_USED = "Used to / would", T_MIX = "Mixed tenses review";
+  const BANK = [
+    {
+      id: "b01", level: "A2", type: "guide", topic: T_PS_PC,
+      title: "Routines and Right Now: Present Simple or Continuous?",
+      instructions: "Read the summary, then complete the sentences.",
+      theory: [
+        { heading: "Forma", points: ["Simple: I work / She works / Do you work?", "Continuous: I am working / She is working / Are you working?"] },
+        { heading: "Usos", points: ["Simple: rutinas, hechos y horarios", "Continuous: lo que pasa en este momento o es temporal"] },
+        { heading: "Marcadores", points: ["Simple: usually, every day, often, never", "Continuous: now, right now, at the moment, this week"] },
+        { heading: "Verbos de estado", points: ["know, like, want, need y believe casi nunca van en continuous", "✗ I am knowing the answer. ✓ I know the answer."] },
+        { heading: "Error típico", points: ["✗ She work in a bank.", "✓ She works in a bank.", "No olvides la -s con he, she e it."] }
+      ],
+      items: [
+        { q: "I usually ____ (take) the bus to work.", options: null, answer: "take", explanation: "«Usually» indica rutina: present simple." },
+        { q: "Look! It ____ (rain) again.", options: null, answer: "is raining", explanation: "«Look!» muestra algo que pasa ahora." },
+        { q: "She ____ coffee every morning.", options: ["drinks", "is drinking", "drink"], answer: "drinks", explanation: "Hábito: present simple, con -s para she." },
+        { q: "This week I ____ from home because the office is closed.", options: ["work", "am working", "works"], answer: "am working", explanation: "Situación temporal: present continuous." },
+        { q: "____ you ____ what I mean?", options: ["Do / understand", "Are / understanding", "Does / understand"], answer: "Do / understand", explanation: "«Understand» es verbo de estado: no va en continuous." },
+        { q: "My manager ____ (not / like) long meetings.", options: null, answer: "doesn't like", explanation: "Negativa con he/she: doesn't + verbo base." }
+      ]
+    },
+    {
+      id: "b02", level: "A2", type: "error", topic: T_PS_PC,
+      title: "Office Life: Find the Mistake",
+      instructions: "Each sentence has one mistake. Write the correct sentence.",
+      theory: [
+        { heading: "Recuerda", points: ["Rutinas → present simple: I start at nine.", "Ahora mismo → present continuous: I am writing an email."] },
+        { heading: "Error típico", points: ["✗ We are having two cars.", "✓ We have two cars.", "«Have» de posesión no va en continuous."] }
+      ],
+      items: [
+        { q: "My boss is wanting a report every Friday.", options: null, answer: "My boss wants a report every Friday.", explanation: "«Want» es verbo de estado y aquí es una rutina: wants." },
+        { q: "I am usually start work at nine.", options: null, answer: "I usually start work at nine.", explanation: "Rutina con «usually»: present simple, sin am." },
+        { q: "Listen, the phone ring.", options: null, answer: "Listen, the phone is ringing.", explanation: "«Listen» indica que ocurre ahora: is ringing." },
+        { q: "She don't work on Saturdays.", options: null, answer: "She doesn't work on Saturdays.", explanation: "Con she se usa doesn't." },
+        { q: "What do you doing right now?", options: null, answer: "What are you doing right now?", explanation: "«Right now»: are you + -ing." },
+        { q: "We are having two cars.", options: null, answer: "We have two cars.", explanation: "«Have» de posesión no va en continuous." }
+      ]
+    },
+    {
+      id: "b03", level: "B1", type: "mc", topic: T_PAST,
+      title: "A Trip to Remember",
+      instructions: "Choose the correct option to complete each sentence.",
+      theory: [
+        { heading: "Past simple", points: ["Acción terminada y completa: I lost my keys.", "Secuencia de acciones: The taxi arrived and we got in."] },
+        { heading: "Past continuous", points: ["was/were + -ing: I was walking.", "Acción en progreso en un momento del pasado o interrumpida por otra."] },
+        { heading: "Truco", points: ["La acción larga va en continuous; la corta que la interrumpe, en simple.", "I was taking a shower when the alarm went off."] }
+      ],
+      items: [
+        { q: "I ____ my keys while I was walking to the car.", options: ["lost", "was losing", "lose"], answer: "lost", explanation: "Acción corta y completa durante otra más larga." },
+        { q: "At 7 a.m. yesterday, we ____ breakfast at the hotel.", options: ["had", "were having", "have"], answer: "were having", explanation: "Hora exacta del pasado + acción en progreso." },
+        { q: "The flight attendant ____ drinks when the turbulence started.", options: ["served", "was serving", "serves"], answer: "was serving", explanation: "Acción en progreso interrumpida por otra." },
+        { q: "When the taxi arrived, we ____ in quickly.", options: ["got", "were getting", "get"], answer: "got", explanation: "Secuencia: primero llegó el taxi y después subimos." },
+        { q: "I ____ a shower when the fire alarm went off.", options: ["took", "was taking", "take"], answer: "was taking", explanation: "La ducha estaba en progreso cuando sonó la alarma." },
+        { q: "We ____ to Cusco in 2019 and loved it.", options: ["went", "were going", "go"], answer: "went", explanation: "Viaje completo en un año concreto: past simple." }
+      ]
+    },
+    {
+      id: "b04", level: "B1", type: "fill", topic: T_PAST,
+      title: "A Bad Day at Work",
+      instructions: "Complete the sentences with the past simple or past continuous of the verbs in brackets.",
+      theory: [
+        { heading: "Recuerda", points: ["was/were + -ing para la acción en progreso.", "Verbo en pasado para la acción completa."] },
+        { heading: "While y when", points: ["While suele ir con la acción larga: While we were waiting…", "When suele ir con la acción corta: …when my computer crashed."] }
+      ],
+      items: [
+        { q: "I ____ (write) an email when my computer crashed.", options: null, answer: "was writing", explanation: "Acción larga interrumpida por «crashed»." },
+        { q: "The meeting ____ (start) late because the projector didn't work.", options: null, answer: "started", explanation: "Hecho completo en el pasado." },
+        { q: "What ____ you ____ (do) at 10 o'clock last night?", options: null, answer: "were / doing", explanation: "Hora exacta del pasado: pregunta en past continuous." },
+        { q: "She ____ (not / hear) the phone because she was wearing headphones.", options: null, answer: "didn't hear", explanation: "Acción puntual negativa: didn't + verbo base." },
+        { q: "While we ____ (wait) for the client, we prepared the slides.", options: null, answer: "were waiting", explanation: "«While» + acción en progreso." },
+        { q: "He ____ (fall) asleep during the presentation!", options: null, answer: "fell", explanation: "Acción puntual: fall → fell (irregular)." }
+      ]
+    },
+    {
+      id: "b05", level: "B1", type: "mc", topic: T_PP,
+      title: "Office Updates: Present Perfect or Past Simple?",
+      instructions: "Choose the correct option to complete each sentence.",
+      theory: [
+        { heading: "Present perfect", points: ["have/has + participio: I have sent", "Resultado o experiencia sin momento definido", "Con: already, yet, ever, never, just, so far"] },
+        { heading: "Past simple", points: ["Verbo en pasado: I sent", "Acción terminada en un momento definido", "Con: yesterday, last week, in 2020, ago"] },
+        { heading: "Error típico", points: ["✗ I have finished it yesterday.", "✓ I finished it yesterday.", "Si dices CUÁNDO, usa past simple."] }
+      ],
+      items: [
+        { q: "I ____ the report to the client yesterday afternoon.", options: ["have sent", "sent", "have been sending"], answer: "sent", explanation: "«Yesterday afternoon» es un momento terminado: past simple." },
+        { q: "We ____ three new suppliers so far this year.", options: ["hired", "have hired", "hire"], answer: "have hired", explanation: "«So far this year»: el período sigue abierto." },
+        { q: "____ you ever ____ a presentation in English?", options: ["Did / give", "Have / given", "Do / give"], answer: "Have / given", explanation: "Experiencia de vida con «ever»: present perfect." },
+        { q: "The meeting ____ at 9 a.m. and lasted two hours.", options: ["has started", "started", "has been starting"], answer: "started", explanation: "Hora concreta en el pasado." },
+        { q: "Sorry, I ____ your email yet. I'll do it after lunch.", options: ["didn't read", "haven't read", "don't read"], answer: "haven't read", explanation: "«Yet» en negativa va con present perfect." },
+        { q: "She ____ for this company since 2019.", options: ["worked", "has worked", "works"], answer: "has worked", explanation: "«Since» + situación que continúa hasta hoy." }
+      ]
+    },
+    {
+      id: "b06", level: "B1", type: "error", topic: T_PP,
+      title: "Career Updates: Correct the Mistakes",
+      instructions: "Each sentence has one mistake. Write the correct sentence.",
+      theory: [
+        { heading: "Past simple", points: ["Con momento terminado: yesterday, last Monday, ago, in 2020.", "Preguntas con when: When did you start?"] },
+        { heading: "Present perfect", points: ["Con ever, never, yet, already, since, for.", "Experiencias y situaciones que siguen hasta hoy."] }
+      ],
+      items: [
+        { q: "I have finished the project last Monday.", options: null, answer: "I finished the project last Monday.", explanation: "«Last Monday» es un momento terminado: past simple." },
+        { q: "Did you ever visit New York?", options: null, answer: "Have you ever visited New York?", explanation: "Experiencia de vida con «ever»: present perfect." },
+        { q: "She works here since 2020.", options: null, answer: "She has worked here since 2020.", explanation: "«Since» + algo que continúa: present perfect." },
+        { q: "We didn't receive the invoice yet.", options: null, answer: "We haven't received the invoice yet.", explanation: "«Yet» en negativa: present perfect." },
+        { q: "When have you started your new job?", options: null, answer: "When did you start your new job?", explanation: "Las preguntas con «when» van en past simple." },
+        { q: "I've lost my phone two days ago.", options: null, answer: "I lost my phone two days ago.", explanation: "«Ago» siempre va con past simple." }
+      ]
+    },
+    {
+      id: "b07", level: "B1", type: "fill", topic: T_PPC,
+      title: "How Long Have You Been Doing It?",
+      instructions: "Complete the sentences with the present perfect continuous or the present perfect simple of the verbs in brackets.",
+      theory: [
+        { heading: "Forma", points: ["have/has been + -ing: I have been studying.", "Pregunta: How long have you been working here?"] },
+        { heading: "Usos", points: ["Duración de una actividad que sigue hasta ahora.", "Actividad reciente con un resultado visible: You look tired. Have you been running?"] },
+        { heading: "Simple o continuous", points: ["Cantidad terminada → simple: I have written four reports.", "Verbos de estado → simple: I have known her for years."] }
+      ],
+      items: [
+        { q: "I ____ (study) English for three years.", options: null, answer: "have been studying", explanation: "Duración de algo que sigue hasta hoy." },
+        { q: "You look tired. ____ you ____ (work) late?", options: null, answer: "Have / been working", explanation: "Actividad reciente con un resultado visible." },
+        { q: "She ____ (call) the supplier all morning, but nobody answers.", options: null, answer: "has been calling", explanation: "Actividad repetida que continúa: «all morning»." },
+        { q: "We ____ (write) four reports this week.", options: null, answer: "have written", explanation: "Cantidad terminada (four reports): present perfect simple." },
+        { q: "How long ____ they ____ (live) in Santiago?", options: null, answer: "have / been living", explanation: "«How long» + actividad que continúa." },
+        { q: "I ____ (know) Carla since university.", options: null, answer: "have known", explanation: "«Know» es verbo de estado: no va en continuous." }
+      ]
+    },
+    {
+      id: "b08", level: "B2", type: "rewrite", topic: T_PPERF,
+      title: "Before It Happened",
+      instructions: "Rewrite the sentences using the past perfect. Start with the words given.",
+      theory: [
+        { heading: "Forma", points: ["had + participio: I had finished.", "Negativa: hadn't + participio."] },
+        { heading: "Uso", points: ["Una acción anterior a otra acción del pasado.", "When I arrived, the meeting had finished. (primero terminó la reunión)"] },
+        { heading: "Palabras útiles", points: ["already, never, before, by the time, because, after"] }
+      ],
+      items: [
+        { q: "The meeting finished. Then I arrived. → When I arrived, the meeting ____", options: null, answer: "When I arrived, the meeting had finished.", explanation: "Primero terminó la reunión: had finished." },
+        { q: "It was my first time in London. (never) → I ____ to London before.", options: null, answer: "I had never been to London before.", explanation: "Experiencia anterior a ese momento del pasado." },
+        { q: "She lost her ticket, so she couldn't get on the train. → She couldn't get on the train because she ____", options: null, answer: "She couldn't get on the train because she had lost her ticket.", explanation: "Perder el pasaje ocurrió antes: had lost." },
+        { q: "The guests left. After that, we cleaned the house. → We cleaned the house after the guests ____", options: null, answer: "We cleaned the house after the guests had left.", explanation: "La acción anterior va en past perfect." },
+        { q: "I finished my report. Then my boss called. (already) → When my boss called, I ____", options: null, answer: "When my boss called, I had already finished my report.", explanation: "«Already» va entre had y el participio." },
+        { q: "They didn't eat anything all day, so they were very hungry. → They were very hungry because they ____", options: null, answer: "They were very hungry because they hadn't eaten anything all day.", explanation: "Negativa: hadn't + participio." }
+      ]
+    },
+    {
+      id: "b09", level: "B1", type: "mc", topic: T_FUT,
+      title: "Plans for Next Week",
+      instructions: "Choose the best future form to complete each sentence.",
+      theory: [
+        { heading: "Will", points: ["Decisiones en el momento: I'll get it.", "Promesas y predicciones de opinión: I think it will rain."] },
+        { heading: "Going to", points: ["Planes e intenciones: We're going to buy a car.", "Predicción con evidencia: Look at those clouds! It's going to rain."] },
+        { heading: "Present continuous", points: ["Citas y planes fijos con hora: I'm seeing the dentist at 4."] }
+      ],
+      items: [
+        { q: "I'm thirsty. — Wait, I ____ you a glass of water.", options: ["will get", "am going to get", "am getting"], answer: "will get", explanation: "Decisión tomada en el momento: will." },
+        { q: "Look at those clouds! It ____ rain.", options: ["will", "is going to", "is"], answer: "is going to", explanation: "Predicción con evidencia visible: going to." },
+        { q: "I ____ the dentist at 4 p.m. tomorrow. It's in my calendar.", options: ["will see", "am seeing", "see"], answer: "am seeing", explanation: "Cita fija con hora: present continuous." },
+        { q: "We ____ a new car next year. We've already saved the money.", options: ["will buy", "are going to buy", "buy"], answer: "are going to buy", explanation: "Plan decidido de antes: going to." },
+        { q: "Don't worry, I ____ tell anyone your secret.", options: ["won't", "am not going", "don't"], answer: "won't", explanation: "Promesa: will / won't." },
+        { q: "I think Chile ____ the match tomorrow.", options: ["will win", "is winning", "wins"], answer: "will win", explanation: "Predicción de opinión con «I think»: will." }
+      ]
+    },
+    {
+      id: "b10", level: "A2", type: "order", topic: T_USED,
+      title: "When I Was a Child",
+      instructions: "Put the words in the correct order to make sentences.",
+      theory: [
+        { heading: "Used to", points: ["used to + verbo base: hábitos y estados del pasado que ya no ocurren.", "Negativa: didn't use to. Pregunta: Did you use to…?"] },
+        { heading: "Would", points: ["Solo para acciones repetidas del pasado, no para estados.", "✗ I would have a dog. ✓ I used to have a dog."] }
+      ],
+      items: [
+        { q: "used / I / to / football / play / every weekend", options: null, answer: "I used to play football every weekend.", explanation: "Sujeto + used to + verbo base." },
+        { q: "didn't / she / to / coffee / like / use", options: null, answer: "She didn't use to like coffee.", explanation: "En negativa se escribe «use», sin d." },
+        { q: "you / did / use / glasses / to / wear", options: null, answer: "Did you use to wear glasses?", explanation: "Pregunta: Did + sujeto + use to." },
+        { q: "would / grandmother / us / my / stories / tell", options: null, answer: "My grandmother would tell us stories.", explanation: "«Would» para una acción repetida del pasado." },
+        { q: "to / there / be / a cinema / used / here", options: null, answer: "There used to be a cinema here.", explanation: "Estado del pasado: there used to be." },
+        { q: "we / every summer / go / would / to the beach", options: null, answer: "We would go to the beach every summer.", explanation: "Costumbre repetida: would + verbo base." }
+      ]
+    },
+    {
+      id: "b11", level: "B1", type: "match", topic: T_MIX,
+      title: "Mixed Tenses: Match the Halves",
+      instructions: "Match the beginnings (1–6) with the endings (A–F).",
+      theory: [
+        { heading: "Pistas", points: ["for / since → present perfect (continuous)", "when + acción corta → interrumpe al past continuous", "already + past perfect → algo que pasó antes"] }
+      ],
+      items: [
+        { q: "I've been waiting for the bus", options: null, answer: "for twenty minutes.", explanation: "Present perfect continuous + «for» y duración." },
+        { q: "When I got to the office,", options: null, answer: "everyone had already left.", explanation: "Past perfect: se fueron antes de que llegara." },
+        { q: "She usually walks to work,", options: null, answer: "but today she's driving.", explanation: "Rutina (simple) frente a algo temporal (continuous)." },
+        { q: "I was cooking dinner", options: null, answer: "when the lights went out.", explanation: "Acción larga interrumpida por una corta." },
+        { q: "Have you ever", options: null, answer: "worked in another country?", explanation: "Experiencia de vida: have you ever + participio." },
+        { q: "Next Friday we're", options: null, answer: "flying to Buenos Aires.", explanation: "Plan fijo: present continuous con valor de futuro." }
+      ]
+    },
+    {
+      id: "b12", level: "B1", type: "reading", topic: T_MIX,
+      title: "Carla's New Job",
+      instructions: "Read the text and answer the questions.",
+      reading: "Carla is an accountant from Valparaíso. She has worked for a mining company since 2021, but last month she received an offer from an international firm in Santiago. At first she wasn't sure. She had never lived away from the coast, and her family lives in Valparaíso. While she was thinking about the offer, an old university friend called her. He had moved to Santiago two years earlier and he loved it. After that conversation, Carla accepted the job.\n\nNow she is learning English because her new team often has meetings with clients from Canada. She has been taking online classes three times a week, and she already feels more confident. Next month she is going to give her first presentation in English. She thinks it will be difficult, but she is excited.",
+      theory: null,
+      items: [
+        { q: "Carla has worked for the mining company since 2021.", options: ["True", "False"], answer: "True", explanation: "El texto dice «has worked for a mining company since 2021»." },
+        { q: "Carla had lived in Santiago before.", options: ["True", "False"], answer: "False", explanation: "«She had never lived away from the coast»." },
+        { q: "Who called Carla while she was thinking about the offer?", options: ["Her boss", "An old university friend", "A client from Canada"], answer: "An old university friend", explanation: "«While she was thinking about the offer, an old university friend called her»." },
+        { q: "Why is Carla learning English?", options: ["Her team has meetings with clients from Canada", "She wants to live in Canada", "Her friend teaches English"], answer: "Her team has meetings with clients from Canada", explanation: "Lo explica el segundo párrafo." },
+        { q: "How often does she take online classes?", options: ["Once a week", "Three times a week", "Every day"], answer: "Three times a week", explanation: "«Three times a week»." },
+        { q: "She has already given a presentation in English.", options: ["True", "False"], answer: "False", explanation: "Lo hará el próximo mes: «is going to give»." }
+      ]
+    }
+  ];
+
+  let current = BANK[0];
+  let view = "sheet";
+  let stageIdx = 0, stageShown = false;
+
+  // History (per-viewer convenience)
+  const HKEY = "ws-history-v1";
+  const loadHist = () => { try { return JSON.parse(localStorage.getItem(HKEY) || "[]"); } catch { return []; } };
+  const saveHist = h => { try { localStorage.setItem(HKEY, JSON.stringify(h.slice(0, 8))); } catch {} };
+  function renderHist() {
+    const h = loadHist(); const box = $("historyList"); box.textContent = "";
+    $("history").hidden = !h.length;
+    h.forEach(ws => {
+      const b = el("button"); b.type = "button";
+      b.append(ws.title + " ", el("small", null, "· " + ws.level));
+      b.onclick = () => open(ws);
+      const d = el("div"); d.append(b); box.append(d);
+    });
+  }
+
+  // Rendering
+  const typeName = t => (TYPES.find(x => x[0] === t) || [, ""])[1];
+
+  function keyBlock(it) {
+    const k = el("div", "key", "→ " + it.answer);
+    if (it.explanation) k.append(el("small", null, it.explanation));
+    return k;
+  }
+
+  function optionButtons(it, reveal) {
+    const ul = el("ul", "opts");
+    (it.options || []).forEach((o, i) => {
+      const li = el("li"); const b = el("button", "opt", String.fromCharCode(97 + i) + ") " + o); b.type = "button";
+      const isRight = norm(o) === norm(it.answer);
+      if (reveal && isRight) b.classList.add("right");
+      b.onclick = () => b.classList.add(isRight ? "right" : "wrong");
+      li.append(b); ul.append(li);
+    });
+    return ul;
+  }
+  const norm = s => String(s || "").trim().toLowerCase().replace(/[.!?]+$/, "");
+
+  function renderSheet(showKey) {
+    const ws = current; const s = el("article", "sheet");
+    const meta = el("div", "meta");
+    meta.append(el("span", "pill", ws.level), el("span", "pill", typeName(ws.type).split(" (")[0]));
+    s.append(meta, el("h2", null, ws.title));
+    const nl = el("div", "name-line"); nl.append(el("span", null, "Name:"), el("span", null, "Date:")); s.append(nl);
+    s.append(el("p", "instr", ws.instructions));
+    if (ws.theory && ws.theory.length) {
+      const t = el("div", "theory"); t.append(el("h3", null, "Remember"));
+      ws.theory.forEach(sec => { const d = el("div"); d.append(el("h4", null, sec.heading)); const ul = el("ul"); (sec.points || []).forEach(p => ul.append(el("li", null, p))); d.append(ul); t.append(d); });
+      s.append(t);
+    }
+    if (ws.reading) s.append(el("div", "reading", ws.reading));
+    if (ws.wordBank && ws.wordBank.length) {
+      const b = el("div", "bank"); b.append(el("b", null, "Word bank"));
+      ws.wordBank.forEach(w => b.append(el("span", null, w))); s.append(b);
+    }
+    if (ws.type === "match") {
+      const m = el("div", "match");
+      const L = el("ol"), R = el("ol", "abc");
+      ws.items.forEach(it => {
+        const li = el("li", null, it.q);
+        if (showKey) li.append(keyBlock({ answer: letterFor(it.answer), explanation: it.explanation }));
+        L.append(li);
+      });
+      shuffledAnswers().forEach(a => R.append(el("li", null, a)));
+      m.append(L, R); s.append(m);
+    } else {
+      const ol = el("ol", "items");
+      ws.items.forEach((it, i) => {
+        const li = el("li");
+        li.append(WRITE[ws.type] ? fixRow(it, i) : el("div", null, it.q));
+        if (it.options && it.options.length) li.append(optionButtons(it, showKey));
+        if (showKey) li.append(keyBlock(it));
+        ol.append(li);
+      });
+      s.append(ol);
+    }
+    s.append(el("p", "foot", showKey ? "Solucionario para la profesora." : "Worksheet Studio · " + ws.topic));
+    return s;
+  }
+
+  // Written-answer types: the learner writes the sentence beside the item and checks it
+  const WRITE = {
+    error: { placeholder: "Escribe la oración corregida", hint: "Revisa el tiempo verbal." },
+    rewrite: { placeholder: "Escribe la oración reescrita", hint: "Revisa la estructura y el tiempo verbal." },
+    order: { placeholder: "Escribe la oración ordenada", hint: "Revisa el orden de las palabras." }
+  };
+  let typed = {};
+  const normSentence = s => String(s || "").toLowerCase().replace(/[‘’]/g, "'")
+    .replace(/\bcan't\b/g, "cannot").replace(/\bwon't\b/g, "will not").replace(/n't\b/g, " not")
+    .replace(/'ve\b/g, " have").replace(/'m\b/g, " am").replace(/'re\b/g, " are").replace(/'ll\b/g, " will")
+    .replace(/[.!?,;:]+/g, "").replace(/\s+/g, " ").trim();
+  function fixRow(it, i) {
+    const row = el("div", "fix");
+    row.append(el("div", "fix-q", it.q));
+    const box = el("div", "fix-box");
+    const inp = el("input"); inp.type = "text"; inp.id = "fix-" + i; inp.placeholder = WRITE[current.type].placeholder;
+    inp.setAttribute("aria-label", "Oración " + (i + 1) + " corregida");
+    inp.value = typed[i] || "";
+    const chk = el("button", "btn", "Revisar"); chk.type = "button";
+    const msg = el("div", "fix-msg");
+    const check = () => {
+      const v = inp.value.trim(); if (!v) { inp.focus(); return; }
+      const target = normSentence(it.answer);
+      // Rewrite items like "… → I wish ____": also accept just the missing part
+      const stem = current.type === "rewrite" && it.q.includes("→") && it.q.includes("____") ? it.q.split("→").pop() : null;
+      const ok = normSentence(v) === target || (stem != null && normSentence(stem.replace(/_{2,}/, v)) === target);
+      inp.className = ok ? "right" : "wrong";
+      msg.className = "fix-msg " + inp.className;
+      msg.textContent = ok ? "✓ Correcto" : "✗ Todavía no. " + WRITE[current.type].hint;
+    };
+    inp.oninput = () => { typed[i] = inp.value; inp.className = ""; msg.className = "fix-msg"; msg.textContent = ""; };
+    inp.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); check(); } };
+    chk.onclick = check;
+    box.append(inp, chk); row.append(box, msg);
+    return row;
+  }
+
+  // Stable shuffle for matching column, seeded by the title
+  function shuffledAnswers() {
+    const arr = current.items.map(i => i.answer);
+    let seed = [...current.title].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+    for (let i = arr.length - 1; i > 0; i--) { seed = (seed * 1103515245 + 12345) >>> 0; const j = seed % (i + 1); [arr[i], arr[j]] = [arr[j], arr[i]]; }
+    return arr;
+  }
+  const letterFor = ans => { const i = shuffledAnswers().indexOf(ans); return (i >= 0 ? String.fromCharCode(65 + i) + " · " : "") + ans; };
+
+  function renderStage() {
+    const ws = current; const it = ws.items[stageIdx]; const st = el("div", "stage");
+    st.append(el("div", "count", `${stageIdx + 1} / ${ws.items.length} · ${ws.title}`));
+    if (ws.reading && stageIdx === 0) st.append(el("div", "reading", ws.reading));
+    st.append(el("div", "q", it.q));
+    if (WRITE[ws.type]) { const r = fixRow(it, stageIdx); r.firstChild.remove(); st.append(r); }
+    if (it.options && it.options.length) st.append(optionButtons(it, stageShown));
+    if (stageShown) st.append(keyBlock(ws.type === "match" ? { answer: it.answer, explanation: it.explanation } : it));
+    const nav = el("div", "stage-nav");
+    const prev = el("button", "btn", "← Anterior"); prev.type = "button"; prev.disabled = stageIdx === 0;
+    prev.onclick = () => { stageIdx--; stageShown = false; render(); };
+    const show = el("button", "btn primary", stageShown ? "Ocultar respuesta" : "Mostrar respuesta"); show.type = "button";
+    show.onclick = () => { stageShown = !stageShown; render(); };
+    const next = el("button", "btn", "Siguiente →"); next.type = "button"; next.disabled = stageIdx >= ws.items.length - 1;
+    next.onclick = () => { stageIdx++; stageShown = false; render(); };
+    nav.append(prev, show, next); st.append(nav);
+    return st;
+  }
+
+  function render() {
+    const out = $("out"); out.textContent = "";
+    out.append(view === "class" ? renderStage() : renderSheet(view === "key"));
+    [["vSheet", "sheet"], ["vKey", "key"], ["vClass", "class"]].forEach(([id, v]) => $(id).setAttribute("aria-pressed", String(view === v)));
+  }
+  $("vSheet").onclick = () => { view = "sheet"; render(); };
+  $("vKey").onclick = () => { view = "key"; render(); };
+  $("vClass").onclick = () => { view = "class"; stageIdx = 0; stageShown = false; render(); };
+  document.addEventListener("keydown", e => {
+    if (view !== "class" || /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    if (e.key === "ArrowRight" && stageIdx < current.items.length - 1) { stageIdx++; stageShown = false; render(); }
+    if (e.key === "ArrowLeft" && stageIdx > 0) { stageIdx--; stageShown = false; render(); }
+    if (e.key === " ") { e.preventDefault(); stageShown = !stageShown; render(); }
+  });
+
+  // Plain-text export
+  function asText(withKey) {
+    const ws = current; const L = [ws.title, "", "Name: ______________    Date: __________", "", ws.instructions, ""];
+    if (ws.theory && ws.theory.length) { L.push("REMEMBER"); ws.theory.forEach(sec => { L.push(sec.heading); (sec.points || []).forEach(p => L.push("  • " + p)); }); L.push(""); }
+    if (ws.reading) L.push(ws.reading, "");
+    if (ws.wordBank && ws.wordBank.length) L.push("Word bank: " + ws.wordBank.join(" · "), "");
+    if (ws.type === "match") {
+      ws.items.forEach((it, i) => L.push(`${i + 1}. ${it.q}`)); L.push("");
+      shuffledAnswers().forEach((a, i) => L.push(`${String.fromCharCode(65 + i)}. ${a}`));
+    } else {
+      ws.items.forEach((it, i) => {
+        L.push(`${i + 1}. ${it.q}`);
+        if (WRITE[ws.type]) L.push("   → ____________________________________________");
+        if (it.options && it.options.length) L.push("   " + it.options.map((o, j) => `${String.fromCharCode(97 + j)}) ${o}`).join("   "));
+      });
+    }
+    if (withKey) {
+      L.push("", "ANSWER KEY");
+      ws.items.forEach((it, i) => L.push(`${i + 1}. ${ws.type === "match" ? letterFor(it.answer) : it.answer}${it.explanation ? "  — " + it.explanation : ""}`));
+    }
+    return L.join("\n");
+  }
+  async function copy(text, btn) {
+    const old = btn.textContent;
+    try { await navigator.clipboard.writeText(text); btn.textContent = "Copiado ✓"; }
+    catch { const t = el("textarea"); t.value = text; document.body.append(t); t.select(); try { document.execCommand("copy"); btn.textContent = "Copiado ✓"; } catch { btn.textContent = "No se pudo copiar"; } t.remove(); }
+    setTimeout(() => btn.textContent = old, 1600);
+  }
+  $("copyStudent").onclick = e => copy(asText(false), e.currentTarget);
+  $("copyKey").onclick = e => copy(asText(true), e.currentTarget);
+
+  // Downloads: a self-contained printable HTML (student sheet + key on its own page)
+  function printableHtml() {
+    const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const pre = t => `<pre>${esc(t)}</pre>`;
+    return `<!doctype html><html><head><meta charset="utf-8"><title>${esc(current.title)}</title>
+<style>body{font-family:Arial,sans-serif;max-width:760px;margin:40px auto;padding:0 20px;color:#111}pre{white-space:pre-wrap;font:16px/1.7 Arial,sans-serif}.key{page-break-before:always;border-top:2px dashed #999;margin-top:40px;padding-top:20px}</style>
+</head><body>${pre(asText(false))}<div class="key">${pre(asText(true).split("ANSWER KEY")[1] ? "ANSWER KEY" + asText(true).split("ANSWER KEY")[1] : "")}</div></body></html>`;
+  }
+  $("dl").onclick = () => {
+    const slug = current.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50) || "worksheet";
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([printableHtml()], { type: "text/html" }));
+    a.download = slug + ".html"; document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+
+  // Creating worksheets with a free AI chat
+  const status = (msg, err) => { const s = $("status"); s.textContent = msg || ""; s.className = "status" + (err ? " err" : ""); };
+
+  const SHAPES = {
+    guide: 'This is a study sheet for self-study between classes. "theory" must have 4-6 sections: form (affirmative / negative / question), main uses, time expressions, contrast with the tense most often confused, and typical mistakes of Spanish speakers (with ✗ wrong / ✓ right examples). Then the items are a short mixed practice: gap-fill with "____", some with "options".',
+    fill: 'Each "q" is a sentence with one gap written as "____" (put the base verb or a hint in brackets when useful). "options": null.',
+    mc: 'Each "q" has one gap "____". "options": exactly 3 or 4 plausible choices, one correct; "answer" must equal one option exactly.',
+    bank: 'Each "q" has one gap "____". Fill "wordBank" with all answers plus 2 distractors, shuffled. "options": null.',
+    rewrite: 'Each "q" gives a sentence and the start of a rewrite or a keyword, e.g. "It\'s a pity I can\'t swim. → I wish ____". "answer" is always the FULL rewritten sentence. "options": null.',
+    error: 'Each "q" is a sentence containing exactly one error on the target point. "answer" is the corrected sentence. "options": null.',
+    order: 'Each "q" is a list of scrambled words separated by " / ". "answer" is the correct sentence. "options": null.',
+    match: 'Each "q" is a left-column item (e.g. a sentence start or word) and "answer" its matching right-column item (sentence end or definition). Answers must be unique. "options": null.',
+    reading: 'Write "reading": a text of 120-250 words (adjust to the level) that uses the target point. Items are comprehension questions; mix multiple choice (with "options") and true/false (options ["True","False"]).'
+  };
+
+  function buildPrompt(f) {
+    return `You are an experienced EFL teacher writing material for one-to-one online English classes with ADULT learners in Chile (Spanish speakers). The focus is verb tenses.
+
+Target language point: ${f.topic}
+CEFR level: ${f.level} (${LEVELS[f.level]})
+Exercise type: ${typeName(f.type)}
+Context / theme for the sentences: ${f.context || "everyday life, varied"}
+Number of items: ${f.count}
+Write the worksheet title and instructions in ${f.lang === "es" ? "Spanish" : "English"}. All exercise content is in English.
+${f.notes ? "Teacher's extra notes: " + f.notes : ""}
+
+Audience: an adult professional who studies with a private teacher and on their own. Use adult, real-life situations (work, emails, meetings, travel, family, health, news); never school or childish contexts. Where natural, address the learner as "you".
+${f.theory ? 'Include "theory": 2-4 short sections (heading + 2-4 brief points each) summarising form, use, time markers and one typical mistake Spanish speakers make, written in Spanish with English examples.' : 'Set "theory" to null unless the exercise type requires it.'}
+
+Rules: vocabulary and sentence length must suit ${f.level}. Each item tests the target point. Avoid ambiguous items with two valid answers. Vary the sentences; no repeated structures. Use natural, modern English. Write each "explanation" in Spanish, one short sentence a teacher can say aloud.
+${SHAPES[f.type]}
+
+Reply with only a JSON object, with no text before or after it:
+{"title": string, "instructions": string, "theory": [{"heading": string, "points": string[]}]|null, "reading": string|null, "wordBank": string[]|null, "items": [{"q": string, "options": string[]|null, "answer": string, "explanation": string}]}`;
+  }
+
+  function formValues() {
+    return {
+      topic: $("topic").value.trim(), level: (document.querySelector("input[name=level]:checked") || {}).value || "B1",
+      type: $("type").value, context: $("context").value.trim(), count: +$("count").value,
+      lang: $("lang").value, notes: $("notes").value.trim(), theory: $("theory").checked || $("type").value === "guide"
+    };
+  }
+  $("form").addEventListener("submit", e => {
+    e.preventDefault();
+    const f = formValues();
+    if (!f.topic) { status("Escribe un tiempo verbal para la ficha.", true); $("topic").focus(); return; }
+    copy(buildPrompt(f), $("go"));
+    status("Instrucciones copiadas. Pégalas en la IA, espera su respuesta y cópiala completa en el recuadro de abajo.");
+  });
+
+  // Pull the JSON object out of the pasted reply, tolerating a code fence or a stray sentence
+  function parseJsonReply(text) {
+    try { return JSON.parse(text); } catch {}
+    const fence = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (fence) { try { return JSON.parse(fence[1]); } catch {} }
+    const a = text.indexOf("{"), b = text.lastIndexOf("}");
+    if (a >= 0 && b > a) { try { return JSON.parse(text.slice(a, b + 1)); } catch {} }
+    return null;
+  }
+
+  $("make").onclick = () => {
+    const text = $("paste").value.trim();
+    if (!text) { status("Primero pega la respuesta de la IA en el recuadro.", true); $("paste").focus(); return; }
+    const r = parseJsonReply(text);
+    if (!r || !Array.isArray(r.items) || !r.items.length) {
+      status("No encontré una ficha en el texto pegado. Copia la respuesta completa de la IA, desde la primera { hasta la última }.", true);
+      return;
+    }
+    const f = formValues();
+    const ws = {
+      level: f.level, type: f.type, topic: f.topic,
+      title: String(r.title || f.topic), instructions: String(r.instructions || ""),
+      reading: r.reading ? String(r.reading) : null,
+      theory: Array.isArray(r.theory) ? r.theory.filter(x => x && x.heading).map(x => ({ heading: String(x.heading), points: Array.isArray(x.points) ? x.points.map(String) : [] })) : null,
+      wordBank: Array.isArray(r.wordBank) ? r.wordBank.map(String) : null,
+      items: r.items.map(it => ({ q: String(it.q || ""), options: Array.isArray(it.options) ? it.options.map(String) : null, answer: String(it.answer || ""), explanation: it.explanation ? String(it.explanation) : "" }))
+    };
+    const h = loadHist().filter(x => x.title !== ws.title); h.unshift(ws); saveHist(h); renderHist();
+    $("paste").value = "";
+    if (view === "class") view = "sheet";
+    open(ws);
+    status(user ? "Ficha creada. Revísala y guárdala en la biblioteca para tus alumnos." : "Ficha creada. Revísala y guárdala en la biblioteca.");
+  };
+
+  /* ============ Firebase: teacher sign-in and the shared library ============ */
+  /* The Firebase web config is not secret: Firestore rules decide who can save. */
+  const FIREBASE = null; // pegar aquí la configuración del proyecto de Firebase (ver LEEME.md)
+  const FB_VER = "12.19.0";
+  const LOCAL_KEY = "ws-biblioteca-local";
+
+  let fb = null, user = null, fbError = false;
+  let cloud = [];
+  let pendingDel = null, startHash = (location.hash || "").slice(1);
+
+  // Without Firebase the page still works: the teacher's library stays in this browser
+  function loadLocal() { try { const v = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]"); return Array.isArray(v) ? v : []; } catch { return []; } }
+  function saveLocal(list) { try { localStorage.setItem(LOCAL_KEY, JSON.stringify(list)); } catch {} }
+  if (!FIREBASE) cloud = loadLocal();
+
+  const teacherOn = () => !!user;
+  const allWorksheets = () => [...cloud, ...BANK];
+
+  function open(ws) {
+    current = ws; typed = {}; stageIdx = 0; stageShown = false;
+    if (view === "key" && !teacherOn()) view = "sheet";
+    note("");
+    render(); renderLib(); applyRole();
+  }
+
+  function libButton(ws) {
+    const row = el("div", "lib-row");
+    const b = el("button", "lib-item"); b.type = "button";
+    b.setAttribute("aria-current", String(current.id === ws.id));
+    b.append(ws.title, el("small", null, ws.level + " · " + typeName(ws.type).split(" (")[0]));
+    b.onclick = () => open(ws);
+    row.append(b);
+    if (teacherOn() && ws.id && ws.id[0] !== "b") {
+      const d = el("button", "lib-del" + (pendingDel === ws.id ? " confirm" : ""), pendingDel === ws.id ? "¿Borrar?" : "✕"); d.type = "button";
+      d.setAttribute("aria-label", "Borrar " + ws.title);
+      d.onclick = () => {
+        if (pendingDel !== ws.id) { pendingDel = ws.id; renderLib(); return; }
+        pendingDel = null;
+        removeWorksheet(ws);
+      };
+      row.append(d);
+    }
+    return row;
+  }
+
+  function renderLib() {
+    const box = $("libList"); box.textContent = "";
+    const total = cloud.length + BANK.length;
+    $("libCount").textContent = total + (total === 1 ? " ficha" : " fichas");
+    const mine = el("div", "lib-sec");
+    mine.append(el("span", "lbl", "De tu profesora"));
+    if (cloud.length) cloud.forEach(ws => mine.append(libButton(ws)));
+    else mine.append(el("p", "lib-empty", teacherOn()
+      ? "Aquí aparecerán las fichas que guardes. Crea una con la IA y usa «Guardar en biblioteca»."
+      : "Todavía no hay fichas nuevas. Mientras tanto, practica con el banco de fichas."));
+    box.append(mine);
+    const sec = el("div", "lib-sec"); sec.append(el("span", "lbl", "Banco de fichas"));
+    const groups = new Map();
+    BANK.forEach(ws => { if (!groups.has(ws.topic)) groups.set(ws.topic, []); groups.get(ws.topic).push(ws); });
+    groups.forEach((list, topic) => {
+      const g = el("div", "lib-group"); g.append(el("small", "muted", topic));
+      list.forEach(ws => g.append(libButton(ws)));
+      sec.append(g);
+    });
+    box.append(sec);
+  }
+
+  function applyRole() {
+    const t = teacherOn();
+    $("form").hidden = !t;
+    $("vKey").hidden = $("copyKey").hidden = !t;
+    $("save").hidden = !(t && !current.id);
+    $("copyLink").hidden = !(t && current.id);
+    $("teacherBtn").hidden = t || !$("signin").hidden;
+    $("logout").hidden = !t;
+    $("whoMail").hidden = !t;
+    $("whoMail").textContent = t ? user.email : "";
+    $("tagline").textContent = t
+      ? "Crea fichas con IA y guárdalas en la biblioteca para tus alumnos."
+      : "Fichas de práctica de tiempos verbales en inglés.";
+  }
+
+  function note(msg, err) { const n = $("saveNote"); n.textContent = msg || ""; n.hidden = !msg; n.className = "save-note" + (err ? " err" : ""); }
+
+  // Only the fields the page uses, as plain data
+  function cleanWorksheet(w, id) {
+    const out = { id, level: w.level, type: w.type, topic: w.topic, title: w.title, instructions: w.instructions || "",
+      reading: w.reading || null, theory: w.theory || null, wordBank: w.wordBank || null,
+      items: w.items.map(it => ({ q: it.q, options: it.options || null, answer: it.answer, explanation: it.explanation || "" })),
+      creada: new Date().toISOString() };
+    return JSON.parse(JSON.stringify(out));
+  }
+
+  const fbErrorMsg = e => (e && e.code === "permission-denied"
+    ? "Tu cuenta no tiene permiso para guardar fichas. Revisa las reglas de Firestore."
+    : "No se pudo guardar. Revisa tu conexión e intenta de nuevo.");
+
+  $("save").onclick = async () => {
+    const entry = cleanWorksheet(current, "f" + Date.now().toString(36));
+    $("save").disabled = true; note("Guardando en la biblioteca…");
+    try {
+      if (fb) {
+        const { doc, setDoc } = fb.fsM;
+        await setDoc(doc(fb.db, "fichas", entry.id), entry);
+      } else {
+        cloud = [entry, ...cloud]; saveLocal(cloud);
+      }
+      open(entry);
+      note(fb ? "Guardada. Ya la pueden ver tus alumnos." : "Guardada en este navegador. Para compartirla con alumnos falta configurar Firebase.");
+    } catch (e) { note(fbErrorMsg(e), true); }
+    $("save").disabled = false;
+  };
+
+  async function removeWorksheet(ws) {
+    try {
+      if (fb) { const { doc, deleteDoc } = fb.fsM; await deleteDoc(doc(fb.db, "fichas", ws.id)); }
+      else { cloud = cloud.filter(x => x.id !== ws.id); saveLocal(cloud); }
+      if (current.id === ws.id) open(cloud.find(x => x.id !== ws.id) || BANK[0]); else renderLib();
+      note("Ficha borrada.");
+    } catch (e) { note(e && e.code === "permission-denied" ? "Tu cuenta no tiene permiso para borrar fichas." : "No se pudo borrar. Intenta de nuevo.", true); }
+  }
+
+  $("copyLink").onclick = e => copy(location.origin + location.pathname + "#" + current.id, e.currentTarget);
+
+  // Open the worksheet named in the link once it is available
+  function openFromHash(id) {
+    const ws = allWorksheets().find(x => x.id === id);
+    if (ws) { open(ws); return true; }
+    return false;
+  }
+  window.addEventListener("hashchange", () => openFromHash((location.hash || "").slice(1)));
+
+  /* ---------- sign-in ---------- */
+  let authMode = "login";
+  function authMsg(text, ok) { const m = $("authMsg"); m.textContent = text || ""; m.hidden = !text; m.className = "auth-msg " + (ok ? "ok" : "err"); }
+  function showSignin(on) {
+    $("signin").hidden = !on;
+    if (on) {
+      authMode = "login"; authMsg("");
+      $("passField").hidden = false; $("authGo").textContent = "Ingresar"; $("authReset").textContent = "Olvidé mi contraseña";
+      $("signinNote").textContent = FIREBASE
+        ? "Los alumnos no necesitan cuenta: solo abren el link."
+        : "Firebase todavía no está configurado. Puedes entrar en modo de prueba: las fichas se guardarán solo en este navegador.";
+      $("aEmail").focus();
+    }
+    applyRole();
+  }
+  $("teacherBtn").onclick = () => showSignin(true);
+  $("authCancel").onclick = () => showSignin(false);
+  $("authReset").onclick = () => {
+    authMode = authMode === "reset" ? "login" : "reset";
+    $("passField").hidden = authMode === "reset";
+    $("authGo").textContent = authMode === "reset" ? "Enviar correo" : "Ingresar";
+    $("authReset").textContent = authMode === "reset" ? "Volver" : "Olvidé mi contraseña";
+    authMsg("");
+  };
+
+  function authError(e) {
+    const c = (e && e.code) || "";
+    if (c === "auth/invalid-email") return "Ese correo no es válido.";
+    if (/auth\/(invalid-credential|invalid-login-credentials|wrong-password|user-not-found)/.test(c)) return "Correo o contraseña incorrectos.";
+    if (c === "auth/too-many-requests") return "Demasiados intentos. Espera unos minutos e intenta de nuevo.";
+    if (c === "auth/network-request-failed") return "Sin conexión a internet. Revisa tu conexión.";
+    return "No se pudo completar. Intenta de nuevo.";
+  }
+
+  $("authForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const email = $("aEmail").value.trim(), pass = $("aPass").value;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { authMsg("Escribe un correo válido."); $("aEmail").focus(); return; }
+    if (!FIREBASE) {
+      // Test mode before Firebase is set up
+      user = { email: email + " (prueba)" };
+      $("aPass").value = ""; showSignin(false); renderLib(); render(); applyRole();
+      return;
+    }
+    if (!fb) { authMsg(fbError ? "No hay conexión con el servicio de cuentas. Recarga la página." : "Conectando… intenta de nuevo en un momento."); return; }
+    const { signInWithEmailAndPassword, sendPasswordResetEmail } = fb.authM;
+    $("authGo").disabled = true; authMsg("");
+    try {
+      if (authMode === "reset") {
+        await sendPasswordResetEmail(fb.auth, email);
+        authMsg("Si hay una cuenta con " + email + ", te llegará un correo para crear una contraseña nueva. Revisa también la carpeta de spam.", true);
+      } else {
+        if (pass.length < 6) { authMsg("La contraseña tiene al menos 6 caracteres."); $("aPass").focus(); return; }
+        await signInWithEmailAndPassword(fb.auth, email, pass);
+        $("aPass").value = "";
+        showSignin(false);
+      }
+    } catch (err) { authMsg(authError(err)); }
+    finally { $("authGo").disabled = false; }
+  });
+
+  $("logout").onclick = async () => {
+    if (fb) { try { await fb.authM.signOut(fb.auth); } catch {} }
+    user = null;
+    if (view === "key") view = "sheet";
+    renderLib(); render(); applyRole();
+  };
+
+  async function startFirebase() {
+    try {
+      const base = "https://www.gstatic.com/firebasejs/" + FB_VER + "/";
+      const [appM, authM, fsM] = await Promise.all(["firebase-app", "firebase-auth", "firebase-firestore"].map(m => import(base + m + ".js")));
+      const app = appM.initializeApp(FIREBASE);
+      const auth = authM.getAuth(app);
+      auth.languageCode = "es";
+      const db = fsM.getFirestore(app);
+      fb = { authM, fsM, auth, db };
+      authM.onAuthStateChanged(auth, u => {
+        user = u ? { uid: u.uid, email: u.email || "" } : null;
+        if (!user && view === "key") view = "sheet";
+        renderLib(); render(); applyRole();
+      });
+      const { collection, query, orderBy, onSnapshot } = fsM;
+      let first = true;
+      onSnapshot(query(collection(db, "fichas"), orderBy("creada", "desc")), snap => {
+        cloud = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+        // Keep the open worksheet in sync, or open the one named in the link
+        if (first && startHash && openFromHash(startHash)) { first = false; return; }
+        first = false;
+        if (current.id && current.id[0] !== "b" && !cloud.some(x => x.id === current.id)) open(cloud[0] || BANK[0]);
+        else renderLib();
+      }, () => note("No se pudieron cargar las fichas de tu profesora. Revisa tu conexión y recarga la página.", true));
+    } catch (e) {
+      fbError = true;
+      note("No se pudo conectar con la biblioteca en línea. El banco de fichas sigue disponible.", true);
+    }
+  }
+
+  renderHist();
+  if (!(startHash && openFromHash(startHash))) open(cloud[0] || BANK[0]);
+  if (FIREBASE) startFirebase();
+})();
+</script>
+})();
+</script>
+</body>
+</html>
