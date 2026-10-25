@@ -1034,7 +1034,11 @@ Reply with only a JSON object, with no text before or after it:
     if (/auth\/(invalid-credential|invalid-login-credentials|wrong-password|user-not-found)/.test(c)) return "Correo o contraseña incorrectos.";
     if (c === "auth/too-many-requests") return "Demasiados intentos. Espera unos minutos e intenta de nuevo.";
     if (c === "auth/network-request-failed") return "Sin conexión a internet. Revisa tu conexión.";
-    return "No se pudo completar. Intenta de nuevo.";
+    // Setup problems in the Firebase console, named so they can be fixed there
+    if (c === "auth/operation-not-allowed") return "El ingreso con correo no está activado en Firebase (Authentication → Método de acceso).";
+    if (c === "auth/unauthorized-domain" || c === "auth/unauthorized-continue-uri") return "Esta página no está autorizada en Firebase (Authentication → Configuración → Dominios autorizados).";
+    if (c === "auth/configuration-not-found") return "Authentication no está iniciado en Firebase. Abre Authentication y aprieta «Comenzar».";
+    return "No se pudo completar (" + (c || "error desconocido") + "). Intenta de nuevo.";
   }
 
   $("authForm").addEventListener("submit", async e => {
