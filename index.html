@@ -1232,7 +1232,10 @@ Reply with only a JSON object, with no text before or after it:
     } catch (e) { note(e && e.code === "permission-denied" ? "Tu cuenta no tiene permiso para borrar fichas." : "No se pudo borrar. Intenta de nuevo.", true); }
   }
 
-  const shareLink = () => location.origin + location.pathname + "#" + current.id;
+  // The version in shared links makes students' browsers fetch the latest page instead of a cached copy.
+  // Change it on every publish.
+  const APP_VERSION = "20261024-3";
+  const shareLink = () => location.origin + location.pathname + "?v=" + APP_VERSION + "#" + current.id;
   $("copyLink").onclick = e => copy(shareLink(), e.currentTarget);
 
   // Open the worksheet named in the link once it is available
