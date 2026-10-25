@@ -185,6 +185,12 @@ ol.items li::marker { font-family: var(--display); font-weight: 700; color: var(
 .ai-links { display: flex; gap: 6px 14px; flex-wrap: wrap; font-size: 14px; }
 .ai-links a { color: var(--accent); font-weight: 700; }
 .lib-sec { display: flex; flex-direction: column; gap: 4px; }
+a.btn { display: inline-block; text-decoration: none; color: var(--ink); }
+#genGo { width: 100%; }
+.ai-more { border-top: 1px solid var(--line); padding-top: 14px; }
+.ai-more summary { cursor: pointer; font-weight: 700; color: var(--muted); }
+.ai-more[open] summary { margin-bottom: 14px; }
+.ai-more .note { margin: 0; font-size: 14px; color: var(--muted); }
 .lib-sec + .lib-sec { margin-top: 10px; }
 </style>
 </head>
@@ -224,9 +230,8 @@ ol.items li::marker { font-family: var(--display); font-weight: 700; color: var(
     <aside class="desk">
     <form class="gen" id="form" autocomplete="off" hidden>
       <div class="field">
-        <label class="lbl" for="topic">Tiempo verbal</label>
-        <input type="text" id="topic" value="Present perfect vs past simple" required>
-        <div class="chips" id="topicChips"></div>
+        <label class="lbl" for="genTopic">Tiempo verbal</label>
+        <select id="genTopic"></select>
       </div>
 
       <div class="field">
@@ -235,49 +240,64 @@ ol.items li::marker { font-family: var(--display); font-weight: 700; color: var(
         <p class="lvl-hint" id="lvlHint"></p>
       </div>
 
-      <div class="field">
-        <label class="lbl" for="type">Tipo de ejercicio</label>
-        <select id="type"></select>
-      </div>
-
-      <div class="field">
-        <label class="lbl" for="context">Contexto o temática (opcional)</label>
-        <input type="text" id="context" value="Trabajo y reuniones" placeholder="Ej.: su trabajo en minería, viaje a Londres">
-        <div class="chips" id="ctxChips"></div>
-      </div>
-
       <div class="row2">
+        <div class="field">
+          <label class="lbl" for="genType">Tipo de ejercicio</label>
+          <select id="genType"><option value="mc">Selección múltiple</option><option value="fill">Completar espacios</option><option value="error">Corregir el error</option><option value="order">Ordenar palabras</option></select>
+        </div>
         <div class="field">
           <label class="lbl" for="count">Preguntas</label>
           <select id="count"><option>5</option><option>6</option><option selected>8</option><option>10</option><option>12</option><option>15</option></select>
-        </div>
-        <div class="field">
-          <label class="lbl" for="lang">Instrucciones en</label>
-          <select id="lang"><option value="en">Inglés</option><option value="es">Español</option></select>
         </div>
       </div>
 
       <label class="check" for="theory"><input type="checkbox" id="theory" checked> Incluir recuadro de teoría (forma, usos, errores típicos)</label>
 
-      <div class="field">
-        <label class="lbl" for="notes">Indicaciones extra (opcional)</label>
-        <textarea id="notes" placeholder="Ej.: trabaja en minería, confunde did y have, prepara una entrevista en inglés"></textarea>
-      </div>
+      <button class="btn primary" type="button" id="genGo">Generar ficha</button>
+      <p class="status" id="genStatus" role="status"></p>
 
-      <div class="ai-steps">
-        <p class="step-t"><b>1</b>Copia las instrucciones y pégalas en una IA gratuita.</p>
-        <button class="btn primary" type="submit" id="go">Copiar instrucciones para la IA</button>
-        <div class="ai-links">
-          <a href="https://chatgpt.com/" target="_blank" rel="noopener">Abrir ChatGPT</a>
-          <a href="https://claude.ai/new" target="_blank" rel="noopener">Abrir Claude</a>
-          <a href="https://gemini.google.com/app" target="_blank" rel="noopener">Abrir Gemini</a>
+      <details class="ai-more" id="aiMore">
+        <summary>Crear con IA (opcional)</summary>
+        <div class="gen">
+          <p class="note">Para otros temas o contextos. Usa una IA gratuita: la app copia las instrucciones y tú pegas la respuesta.</p>
+          <div class="field">
+            <label class="lbl" for="topic">Tema</label>
+            <input type="text" id="topic" value="Present perfect vs past simple">
+            <div class="chips" id="topicChips"></div>
+          </div>
+          <div class="field">
+            <label class="lbl" for="type">Tipo de ejercicio</label>
+            <select id="type"></select>
+          </div>
+          <div class="field">
+            <label class="lbl" for="context">Contexto o temática (opcional)</label>
+            <input type="text" id="context" value="Trabajo y reuniones" placeholder="Ej.: su trabajo en minería, viaje a Londres">
+            <div class="chips" id="ctxChips"></div>
+          </div>
+          <div class="field">
+            <label class="lbl" for="lang">Instrucciones en</label>
+            <select id="lang"><option value="en">Inglés</option><option value="es">Español</option></select>
+          </div>
+          <div class="field">
+            <label class="lbl" for="notes">Indicaciones extra (opcional)</label>
+            <textarea id="notes" placeholder="Ej.: trabaja en minería, confunde did y have, prepara una entrevista en inglés"></textarea>
+          </div>
+          <div class="ai-steps">
+            <p class="step-t"><b>1</b>Copia las instrucciones y pégalas en una IA gratuita.</p>
+            <button class="btn" type="submit" id="go">Copiar instrucciones para la IA</button>
+            <div class="ai-links">
+              <a href="https://chatgpt.com/" target="_blank" rel="noopener">Abrir ChatGPT</a>
+              <a href="https://claude.ai/new" target="_blank" rel="noopener">Abrir Claude</a>
+              <a href="https://gemini.google.com/app" target="_blank" rel="noopener">Abrir Gemini</a>
+            </div>
+            <p class="step-t"><b>2</b>Copia la respuesta completa de la IA y pégala aquí.</p>
+            <label class="lbl" for="paste">Respuesta de la IA</label>
+            <textarea id="paste" rows="5" placeholder="Pega aquí la respuesta completa (empieza con {)"></textarea>
+            <button class="btn" type="button" id="make">Crear ficha</button>
+            <p class="status" id="status" role="status"></p>
+          </div>
         </div>
-        <p class="step-t"><b>2</b>Copia la respuesta completa de la IA y pégala aquí.</p>
-        <label class="lbl" for="paste">Respuesta de la IA</label>
-        <textarea id="paste" rows="5" placeholder="Pega aquí la respuesta completa (empieza con {)"></textarea>
-        <button class="btn" type="button" id="make">Crear ficha</button>
-        <p class="status" id="status" role="status"></p>
-      </div>
+      </details>
 
       <div class="history" id="history" hidden>
         <span class="lbl">Fichas sin guardar (este navegador)</span>
@@ -301,6 +321,7 @@ ol.items li::marker { font-family: var(--display); font-weight: 700; color: var(
         <div class="tools">
           <button class="btn save" type="button" id="save" hidden>Guardar en biblioteca</button>
           <button class="btn" type="button" id="copyLink" hidden>Copiar link para alumno</button>
+          <a class="btn" id="sendWa" href="#" target="_blank" rel="noopener" hidden>Enviar por WhatsApp</a>
           <button class="btn" type="button" id="copyStudent">Copiar hoja</button>
           <button class="btn" type="button" id="copyKey" hidden>Copiar solucionario</button>
           <button class="btn" type="button" id="dl">Descargar</button>
@@ -568,6 +589,198 @@ ol.items li::marker { font-family: var(--display); font-weight: 700; color: var(
       ]
     }
   ];
+
+
+  /* ============ Automatic worksheets (no AI) ============ */
+  // Each sentence: [level, sentence with one gap, hint, answer, wrong option, wrong option, explanation].
+  // One sentence feeds every exercise type: fill the gap, multiple choice, find the mistake
+  // (the gap filled with the first wrong option) and word order (the correct sentence scrambled).
+  const POOL = {
+    PS: [
+      ["A2", "I usually ____ the bus to work.", "take", "take", "am taking", "takes", "Rutina con «usually»: present simple."],
+      ["A2", "Look! It ____ again.", "rain", "is raining", "rains", "rained", "«Look!» muestra algo que pasa ahora."],
+      ["A2", "She ____ coffee every morning.", "drink", "drinks", "drink", "is drinking", "Hábito con she: drinks."],
+      ["A2", "Be quiet, please. The baby ____.", "sleep", "is sleeping", "sleeps", "sleep", "Está pasando en este momento: is sleeping."],
+      ["A2", "My brother ____ in a bank.", "work", "works", "work", "working", "Con he/she/it el verbo lleva -s."],
+      ["A2", "Right now I ____ a report for my boss.", "write", "am writing", "write", "writes", "«Right now»: present continuous."],
+      ["A2", "We ____ to the gym on Mondays and Wednesdays.", "go", "go", "goes", "going", "Rutina con we: go, sin -s."],
+      ["A2", "He ____ coffee. He prefers tea.", "not / like", "doesn't like", "isn't liking", "don't like", "«Like» es verbo de estado y con he va doesn't."],
+      ["B1", "I ____ what you mean.", "understand", "understand", "am understanding", "understands", "«Understand» es verbo de estado: no va en continuous."],
+      ["B1", "This month our team ____ on a new project.", "work", "is working", "work", "working", "«This month»: situación temporal, present continuous."],
+      ["B1", "The train ____ at 8:15 every morning.", "leave", "leaves", "is leaving", "leave", "Horarios fijos: present simple."],
+      ["B1", "Why ____ you wearing a suit today?", "be", "are", "do", "is", "Pregunta en present continuous: are + you + -ing."],
+      ["B1", "My sister ____ in London at the moment.", "live", "is living", "live", "living", "«At the moment»: situación temporal."],
+      ["B1", "This soup ____ delicious!", "taste", "tastes", "is tasting", "taste", "«Taste» como estado (tener sabor) va en simple."],
+      ["B1", "My manager always ____ meetings at 9 a.m.", "start", "starts", "is starting", "start", "Rutina con «always»: present simple."],
+      ["B1", "I can't talk now. I ____ dinner.", "cook", "am cooking", "cook", "cooks", "Acción en este momento: am cooking."]
+    ],
+    PA: [
+      ["A2", "I ____ my keys while I was walking to the car.", "lose", "lost", "was losing", "lose", "Acción corta y completa durante otra más larga."],
+      ["A2", "We ____ TV when the lights went out.", "watch", "were watching", "was watching", "watch", "Acción larga interrumpida; con we se usa were."],
+      ["A2", "Yesterday I ____ my grandmother.", "visit", "visited", "visit", "visits", "«Yesterday»: past simple."],
+      ["B1", "At this time yesterday, we ____ on the beach.", "sit", "were sitting", "was sitting", "sit", "Momento exacto del pasado: past continuous con were."],
+      ["B1", "The phone rang while I ____ a shower.", "take", "was taking", "take", "takes", "La ducha estaba en progreso cuando sonó el teléfono."],
+      ["B1", "When the taxi arrived, we ____ in quickly.", "get", "got", "were getting", "get", "Secuencia: primero llegó el taxi y después subimos."],
+      ["B1", "She ____ asleep during the film.", "fall", "fell", "was falling", "fall", "Acción puntual: fall → fell."],
+      ["B1", "What ____ you doing at 10 o'clock last night?", "be", "were", "did", "was", "Hora exacta del pasado: were you + -ing."],
+      ["B1", "I ____ the news when my boss called.", "read", "was reading", "were reading", "reads", "Acción larga interrumpida; con I se usa was."],
+      ["A2", "They ____ to Cusco in 2019.", "go", "went", "were going", "go", "Viaje completo en un año concreto: went."],
+      ["B1", "While we ____ for the client, we prepared the slides.", "wait", "were waiting", "was waiting", "wait", "«While» + acción en progreso; con we se usa were."],
+      ["B1", "He ____ his arm while he was playing football.", "break", "broke", "was breaking", "break", "Acción corta durante otra larga: broke."],
+      ["B1", "It ____ when we left the office, so we took a taxi.", "rain", "was raining", "rains", "rain", "Situación de fondo en el pasado: was raining."],
+      ["B2", "I ____ to the radio, so I didn't hear the doorbell.", "listen", "was listening", "listen", "listens", "Actividad en progreso que explica lo que pasó."],
+      ["A2", "____ you see the match last night?", "do", "Did", "Were", "Do", "Pregunta en past simple: Did + sujeto + verbo base."],
+      ["B1", "Nobody ____ when the teacher came in.", "talk", "was talking", "talk", "talking", "Acción en progreso en ese momento: was talking."]
+    ],
+    PP: [
+      ["B1", "I ____ the report to the client yesterday.", "send", "sent", "have sent", "send", "«Yesterday» es un momento terminado: past simple."],
+      ["B1", "We ____ three new suppliers so far this year.", "hire", "have hired", "hired", "hire", "«So far this year»: el período sigue abierto."],
+      ["B1", "____ you ever been to Mexico?", "have", "Have", "Did", "Do", "Experiencia de vida con «ever»: have you ever + participio."],
+      ["B1", "The meeting ____ at 9 a.m. and lasted two hours.", "start", "started", "has started", "start", "Hora concreta en el pasado: started."],
+      ["B1", "Sorry, I ____ your email yet.", "not / read", "haven't read", "didn't read", "don't read", "«Yet» en negativa va con present perfect."],
+      ["B1", "She ____ for this company since 2019.", "work", "has worked", "worked", "works", "«Since» + situación que continúa hasta hoy."],
+      ["A2", "I ____ my phone two days ago.", "lose", "lost", "have lost", "lose", "«Ago» siempre va con past simple."],
+      ["B1", "When ____ you start your new job?", "do", "did", "have", "do", "Las preguntas con «when» van en past simple."],
+      ["B1", "I ____ just finished the presentation.", "have", "have", "did", "am", "«Just» va con present perfect: have just finished."],
+      ["B1", "We ____ in Valparaíso for five years, but now we live in Santiago.", "live", "lived", "have lived", "live", "Etapa terminada (ya no viven ahí): past simple."],
+      ["B1", "I ____ that film three times. It's my favourite.", "see", "have seen", "seen", "see", "Experiencia sin fecha: have seen."],
+      ["A2", "Last summer we ____ to the south of Chile.", "travel", "travelled", "have travelled", "travel", "«Last summer»: past simple."],
+      ["B2", "This is the first time I ____ a presentation in English.", "give", "have given", "gave", "give", "«This is the first time» va con present perfect."],
+      ["B1", "How long ____ you known your best friend?", "have", "have", "did", "do", "«How long» + algo que sigue: have you known."],
+      ["B1", "He ____ the company in 2015 and left in 2020.", "join", "joined", "has joined", "join", "Fechas terminadas: past simple."],
+      ["B2", "Our sales ____ by 20% since January.", "grow", "have grown", "grew", "grow", "«Since January»: período que llega hasta hoy."]
+    ],
+    PPC: [
+      ["B1", "I ____ English for three years.", "study", "have been studying", "am studying", "studied", "Duración de algo que sigue hasta hoy."],
+      ["B1", "You look tired. ____ you been working late?", "have", "Have", "Are", "Did", "Actividad reciente con resultado visible: have you been + -ing."],
+      ["B1", "She ____ the supplier all morning, but nobody answers.", "call", "has been calling", "calls", "called", "Actividad repetida que continúa: «all morning»."],
+      ["B1", "We ____ four reports this week.", "write", "have written", "have been writing", "writing", "Cantidad terminada (four reports): present perfect simple."],
+      ["B1", "How long ____ they been living in Santiago?", "have", "have", "are", "did", "«How long» + actividad que continúa."],
+      ["B1", "I ____ Carla since university.", "know", "have known", "have been knowing", "know", "«Know» es verbo de estado: no va en continuous."],
+      ["B2", "It ____ all day, and the streets are flooded.", "rain", "has been raining", "is raining", "rains", "Actividad larga hasta ahora con resultado visible."],
+      ["B1", "My hands are dirty because I ____ in the garden.", "work", "have been working", "work", "has been working", "Actividad reciente que explica el resultado; con I se usa have."],
+      ["B2", "She ____ three cups of coffee today.", "drink", "has drunk", "has been drinking", "drinks", "Cantidad (three cups): present perfect simple."],
+      ["B1", "We ____ for the bus for twenty minutes.", "wait", "have been waiting", "are waiting", "wait", "«For twenty minutes» hasta ahora: have been waiting."],
+      ["B2", "He ____ that car for ten years.", "have", "has had", "has been having", "have", "«Have» de posesión es estado: has had."],
+      ["B1", "What ____ you been doing since lunch?", "have", "have", "are", "did", "Pregunta en present perfect continuous: have you been + -ing."],
+      ["B2", "I ____ about changing jobs lately.", "think", "have been thinking", "think", "thought", "«Lately»: actividad reciente que continúa."],
+      ["B1", "They ____ the house since 9 a.m. They're almost finished.", "clean", "have been cleaning", "are cleaning", "cleaned", "«Since 9 a.m.» y todavía no terminan."],
+      ["B2", "I ____ this book twice.", "read", "have read", "have been reading", "am reading", "Cantidad de veces (twice): present perfect simple."],
+      ["B1", "She ____ yoga for two years and feels great.", "do", "has been doing", "is doing", "does", "Duración hasta hoy con «for two years»."]
+    ],
+    PPF: [
+      ["B1", "When I arrived, the meeting ____.", "finish", "had finished", "has finished", "finishes", "La reunión terminó antes de que llegara: had finished."],
+      ["B1", "I ____ never been to London before that trip.", "have", "had", "have", "was", "Experiencia anterior a un momento del pasado: had never been."],
+      ["B1", "She couldn't get on the train because she ____ her ticket.", "lose", "had lost", "has lost", "loses", "Perder el pasaje ocurrió antes: had lost."],
+      ["B1", "We cleaned the house after the guests ____.", "leave", "had left", "have left", "leave", "La acción anterior va en past perfect."],
+      ["B2", "By the time we got to the cinema, the film ____.", "start", "had started", "has started", "starts", "«By the time» + acción anterior: had started."],
+      ["B1", "They were hungry because they ____ all day.", "not / eat", "hadn't eaten", "haven't eaten", "don't eat", "Negativa en past perfect: hadn't + participio."],
+      ["B2", "The shop ____ when we got there, so we went home.", "close", "had closed", "has closed", "closes", "La tienda cerró antes de que llegaran."],
+      ["B2", "It was the best meal I ____ ever eaten.", "have", "had", "have", "was", "Superlativo en pasado + ever: had ever eaten."],
+      ["B1", "After she ____ dinner, she watched a film.", "cook", "had cooked", "has cooked", "cooks", "Primero cocinó, después vio la película."],
+      ["B2", "I didn't recognise him because he ____ a lot.", "change", "had changed", "has changed", "changes", "El cambio ocurrió antes de verlo: had changed."],
+      ["B1", "Had you ever ____ sushi before you came to Chile?", "try", "tried", "try", "trying", "Después de had va el participio: tried."],
+      ["B2", "When the police arrived, the thief ____.", "escape", "had escaped", "has escaped", "escapes", "El ladrón escapó antes de que llegara la policía."],
+      ["B1", "She was nervous because she ____ in public before.", "not / speak", "hadn't spoken", "hasn't spoken", "doesn't speak", "Negativa en past perfect: hadn't spoken."],
+      ["B2", "We ____ each other for years before we started working together.", "know", "had known", "have known", "know", "Situación anterior a otra del pasado: had known."],
+      ["B1", "When I got to the station, my train ____.", "already / leave", "had already left", "has already left", "already leaves", "«Already» va entre had y el participio."],
+      ["B2", "He was tired because he ____ badly the night before.", "sleep", "had slept", "has slept", "sleeps", "Causa anterior al momento del pasado: had slept."]
+    ],
+    FU: [
+      ["B1", "I'm thirsty. — Wait, I ____ you a glass of water.", "get", "will get", "am getting", "get", "Decisión tomada en el momento: will."],
+      ["B1", "Look at those clouds! It ____ rain.", "be going to", "is going to", "is", "rains", "Predicción con evidencia visible: going to."],
+      ["B1", "I ____ the dentist at 4 p.m. tomorrow. It's in my calendar.", "see", "am seeing", "see", "will to see", "Cita fija con hora: present continuous."],
+      ["B1", "We ____ a new car next year. We've already saved the money.", "buy", "are going to buy", "buy", "bought", "Plan decidido de antes: going to."],
+      ["B1", "Don't worry, I ____ tell anyone your secret.", "not", "won't", "don't", "am not", "Promesa: won't + verbo base."],
+      ["B1", "I think Chile ____ the match tomorrow.", "win", "will win", "is winning", "wins", "Predicción de opinión con «I think»: will."],
+      ["A2", "The conference ____ at 9:00 on Monday, according to the programme.", "start", "starts", "is start", "start", "Horarios y programas: present simple."],
+      ["B1", "What ____ you going to do this weekend?", "be", "are", "do", "will", "Pregunta con going to: are you going to."],
+      ["B1", "Maybe I ____ you later.", "call", "will call", "am calling", "call", "«Maybe» + decisión no planificada: will."],
+      ["B1", "She ____ married in June. The invitations are ready.", "get", "is getting", "gets", "get", "Plan fijo y organizado: present continuous."],
+      ["B1", "I've decided: I ____ for a new job.", "look", "am going to look", "look", "looked", "Decisión ya tomada: going to."],
+      ["B2", "Careful! You ____ that glass!", "drop", "are going to drop", "drop", "dropped", "Algo está a punto de pasar: going to."],
+      ["A2", "The bus ____ at 7:30 tomorrow morning.", "leave", "leaves", "leave", "leaving", "Horario de transporte: present simple."],
+      ["B1", "Do you think it ____ cold tomorrow?", "be", "will be", "is being", "be", "Predicción de opinión: will be."],
+      ["B1", "We ____ dinner with my parents on Sunday. We booked a table.", "have", "are having", "have", "had", "Plan con reserva hecha: present continuous."],
+      ["B1", "I promise I ____ late again.", "not / be", "won't be", "am not", "don't be", "Promesa: won't be."]
+    ],
+    UT: [
+      ["A2", "I ____ football every weekend when I was a child.", "used to / would + play", "used to play", "use to play", "was used to play", "Hábito del pasado: used to + verbo base."],
+      ["A2", "She ____ coffee, but now she drinks it every day.", "used to / would + not / like", "didn't use to like", "didn't used to like", "doesn't use to like", "En negativa con didn't se escribe «use», sin d."],
+      ["A2", "____ you use to wear glasses?", "do", "Did", "Do", "Were", "Pregunta: Did + sujeto + use to."],
+      ["B1", "My grandmother ____ us stories every night.", "used to / would + tell", "would tell", "will tell", "was tell", "Acción repetida del pasado: would + verbo base."],
+      ["A2", "There ____ a cinema here.", "used to / would + be", "used to be", "use to be", "uses to be", "Estado del pasado: there used to be."],
+      ["B1", "We ____ to the beach every summer.", "used to / would + go", "would go", "will go", "are go", "Costumbre repetida del pasado: would go."],
+      ["B1", "I ____ a dog when I was young.", "used to / would + have", "used to have", "would have", "use to have", "Con estados (tener) no se usa would: used to have."],
+      ["B1", "He ____, but he stopped five years ago.", "used to / would + smoke", "used to smoke", "uses to smoke", "use to smoke", "Hábito que ya terminó: used to."],
+      ["A2", "Where did you ____?", "used to / would + live", "use to live", "used to live", "using to live", "Después de did se escribe «use», sin d."],
+      ["B1", "My dad ____ us to school by bike.", "used to / would + take", "would take", "will take", "is take", "Acción repetida del pasado: would take."],
+      ["B1", "This building ____ a hospital.", "used to / would + be", "used to be", "would be", "use to be", "Estado del pasado: used to be (no would)."],
+      ["B2", "Every Sunday, my uncle ____ a huge lunch for everyone.", "used to / would + cook", "would cook", "will cook", "is cook", "Costumbre repetida: would cook."],
+      ["A2", "I ____ vegetables, but now I love them.", "used to / would + not / eat", "didn't use to eat", "didn't used to eat", "don't use to eat", "Negativa: didn't use to + verbo base."],
+      ["B1", "We ____ in Concepción before we moved here.", "used to / would + live", "used to live", "would live", "use to live", "Situación del pasado (estado): used to live."],
+      ["B1", "Life ____ simpler without mobile phones.", "used to / would + be", "used to be", "would be", "uses to be", "Estado del pasado: used to be."],
+      ["B1", "When I was a student, I ____ up all night studying.", "used to / would + stay", "would stay", "will stay", "am stay", "Costumbre repetida del pasado: would stay."]
+    ]
+  };
+  const GEN_TOPICS = [
+    { key: "PS", topic: T_PS_PC, theory: "b01" }, { key: "PA", topic: T_PAST, theory: "b03" },
+    { key: "PP", topic: T_PP, theory: "b05" }, { key: "PPC", topic: T_PPC, theory: "b07" },
+    { key: "PPF", topic: T_PPERF, theory: "b08" }, { key: "FU", topic: T_FUT, theory: "b09" },
+    { key: "UT", topic: T_USED, theory: "b10" }, { key: "MX", topic: T_MIX, theory: null }
+  ];
+  const GEN_TYPES = {
+    fill: { name: "Fill in the Blanks", instructions: "Complete the sentences with the correct form of the verbs in brackets." },
+    mc: { name: "Multiple Choice", instructions: "Choose the correct option to complete each sentence." },
+    error: { name: "Find the Mistake", instructions: "Each sentence has one mistake. Write the correct sentence." },
+    order: { name: "Word Order", instructions: "Put the words in the correct order to make sentences." }
+  };
+  // Levels the pool covers; the teacher's CEFR choice maps to the nearest one
+  const genLevel = l => (l === "A1" || l === "A2" ? "A2" : l === "B1" ? "B1" : "B2");
+
+  // Small seeded random generator, so a link rebuilds exactly the same worksheet
+  function seeded(seed) {
+    let a = seed >>> 0;
+    return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
+  function shuffled(list, rnd) {
+    const a = list.slice();
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+  }
+  const LVL_ORDER = ["A2", "B1", "B2"];
+
+  function buildGenerated(key, type, level, count, seed, withTheory) {
+    const g = GEN_TOPICS.find(x => x.key === key), t = GEN_TYPES[type];
+    if (!g || !t || !LVL_ORDER.includes(level)) return null;
+    const rnd = seeded(seed);
+    const all = key === "MX" ? Object.values(POOL).flat() : POOL[key];
+    // Sentences at the chosen level first, then the nearest levels
+    const dist = s => Math.abs(LVL_ORDER.indexOf(s[0]) - LVL_ORDER.indexOf(level));
+    const picked = shuffled(all, rnd).sort((x, y) => dist(x) - dist(y)).slice(0, Math.min(count, all.length));
+    const items = shuffled(picked, rnd).map(([, s, hint, a, w1, w2, e]) => {
+      const full = s.replace("____", a);
+      if (type === "fill") return { q: s.replace("____", "____ (" + hint + ")"), options: null, answer: a, explanation: e };
+      if (type === "mc") return { q: s, options: shuffled([a, w1, w2], rnd), answer: a, explanation: e };
+      if (type === "error") return { q: s.replace("____", w1), options: null, answer: full, explanation: e };
+      let words = full.split(" ");
+      for (let k = 0; k < 5 && words.join(" ") === full; k++) words = shuffled(words, rnd);
+      return { q: words.join(" / "), options: null, answer: full, explanation: e };
+    });
+    const src = g.theory && BANK.find(b => b.id === g.theory);
+    return {
+      id: ["g", key, type, level, count, seed, withTheory ? 1 : 0].join("."),
+      level, type, topic: g.topic,
+      title: g.topic.charAt(0).toUpperCase() + g.topic.slice(1) + ": " + t.name + " · Set " + seed,
+      instructions: t.instructions,
+      theory: withTheory && src ? src.theory : null, reading: null, wordBank: null, items
+    };
+  }
+  function generatedFromId(id) {
+    const p = String(id).split(".");
+    if (p.length !== 7 || p[0] !== "g") return null;
+    return buildGenerated(p[1], p[2], p[3], Math.max(1, Math.min(30, +p[4] || 8)), +p[5] || 1, p[6] === "1");
+  }
 
   let current = BANK[0];
   let view = "sheet";
@@ -864,6 +1077,23 @@ Reply with only a JSON object, with no text before or after it:
     status(user ? "Ficha creada. Revísala y guárdala en la biblioteca para tus alumnos." : "Ficha creada. Revísala y guárdala en la biblioteca.");
   };
 
+  GEN_TOPICS.forEach(g => { const o = el("option", null, g.topic); o.value = g.key; $("genTopic").append(o); });
+  $("genTopic").value = "PP";
+
+  // Build a new automatic worksheet; each click mixes a different set of sentences
+  $("genGo").onclick = () => {
+    const level = genLevel((document.querySelector("input[name=level]:checked") || {}).value || "B1");
+    const seed = 1 + Math.floor(Math.random() * 9999);
+    const ws = buildGenerated($("genTopic").value, $("genType").value, level, +$("count").value, seed, $("theory").checked);
+    if (!ws) return;
+    if (view === "class") view = "sheet";
+    open(ws);
+    $("genGo").textContent = "Generar otra versión";
+    const g = $("genStatus");
+    g.textContent = "Ficha lista (" + ws.items.length + " preguntas). Mándala con «Copiar link para alumno» o «Enviar por WhatsApp».";
+    if (window.matchMedia("(max-width: 860px)").matches) $("out").scrollIntoView({ behavior: "smooth" });
+  };
+
   /* ============ Firebase: teacher sign-in and the shared library ============ */
   /* The Firebase web config is not secret: Firestore rules decide who can save. */
   const FIREBASE = {
@@ -942,14 +1172,15 @@ Reply with only a JSON object, with no text before or after it:
     const t = teacherOn();
     $("form").hidden = !t;
     $("vKey").hidden = $("copyKey").hidden = !t;
-    $("save").hidden = !(t && !current.id);
-    $("copyLink").hidden = !(t && current.id);
+    $("save").hidden = !(t && (!current.id || current.id.startsWith("g.")));
+    $("copyLink").hidden = $("sendWa").hidden = !(t && current.id);
+    if (current.id) $("sendWa").href = "https://wa.me/?text=" + encodeURIComponent(current.title + "\n" + shareLink());
     $("teacherBtn").hidden = t || !$("signin").hidden;
     $("logout").hidden = !t;
     $("whoMail").hidden = !t;
     $("whoMail").textContent = t ? user.email : "";
     $("tagline").textContent = t
-      ? "Crea fichas con IA y guárdalas en la biblioteca para tus alumnos."
+      ? "Genera fichas y envíalas a tus alumnos por link o WhatsApp."
       : "Fichas de práctica de tiempos verbales en inglés.";
   }
 
@@ -993,11 +1224,12 @@ Reply with only a JSON object, with no text before or after it:
     } catch (e) { note(e && e.code === "permission-denied" ? "Tu cuenta no tiene permiso para borrar fichas." : "No se pudo borrar. Intenta de nuevo.", true); }
   }
 
-  $("copyLink").onclick = e => copy(location.origin + location.pathname + "#" + current.id, e.currentTarget);
+  const shareLink = () => location.origin + location.pathname + "#" + current.id;
+  $("copyLink").onclick = e => copy(shareLink(), e.currentTarget);
 
   // Open the worksheet named in the link once it is available
   function openFromHash(id) {
-    const ws = allWorksheets().find(x => x.id === id);
+    const ws = allWorksheets().find(x => x.id === id) || (id.startsWith("g.") ? generatedFromId(id) : null);
     if (ws) { open(ws); return true; }
     return false;
   }
@@ -1094,7 +1326,7 @@ Reply with only a JSON object, with no text before or after it:
       onSnapshot(query(collection(db, "fichas"), orderBy("creada", "desc")), snap => {
         cloud = snap.docs.map(d => ({ ...d.data(), id: d.id }));
         // Keep the open worksheet in sync, or open the one named in the link
-        if (first && startHash && openFromHash(startHash)) { first = false; return; }
+        if (first && startHash.startsWith("f") && openFromHash(startHash)) { first = false; return; }
         first = false;
         if (current.id && current.id[0] !== "b" && !cloud.some(x => x.id === current.id)) open(cloud[0] || BANK[0]);
         else renderLib();

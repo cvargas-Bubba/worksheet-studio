@@ -12,10 +12,14 @@ Funciona en el celular y en el computador.
 - **Banco de fichas:** 12 fichas listas de present simple y continuous, past simple y continuous,
   present perfect (simple y continuous), past perfect, futuro, used to / would y repasos mixtos.
 - **Profesora (con correo y contraseña):**
-  - Crea fichas nuevas con una IA gratuita: la app copia las instrucciones, la profesora las
-    pega en ChatGPT, Claude o Gemini, y después pega la respuesta en la app.
-  - Guarda las fichas en la biblioteca, donde las ven todos los alumnos.
-  - Ve el solucionario y copia el link de cada ficha para enviarlo.
+  - **Generador automático, sin IA:** elige tiempo verbal, nivel, tipo de ejercicio (selección
+    múltiple, completar, corregir el error u ordenar palabras) y cantidad de preguntas. La app
+    arma la ficha con un banco de 112 oraciones; cada clic da una versión distinta.
+  - **Enviar a los alumnos:** cada ficha tiene su link (las generadas lo llevan en `#g.…` y se
+    rearman igual al abrirlo) y un botón para enviarla por WhatsApp.
+  - Guarda fichas en la biblioteca, donde las ven todos los alumnos.
+  - Ve el solucionario.
+  - Opcional: crea fichas de otros temas con una IA gratuita (copiar instrucciones y pegar la respuesta).
 
 ## Cuenta y datos
 
