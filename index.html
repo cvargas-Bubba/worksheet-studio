@@ -854,7 +854,7 @@ a.btn { display: inline-block; text-decoration: none; color: var(--ink); }
       const ol = el("ol", "items");
       ws.items.forEach((it, i) => {
         const li = el("li");
-        li.append(WRITE[ws.type] ? fixRow(it, i) : el("div", null, it.q));
+        li.append(writeCfg(it) ? fixRow(it, i) : el("div", null, it.q));
         if (it.options && it.options.length) li.append(optionButtons(it, showKey));
         if (showKey) li.append(keyBlock(it));
         ol.append(li);
@@ -871,17 +871,21 @@ a.btn { display: inline-block; text-decoration: none; color: var(--ink); }
     rewrite: { placeholder: "Escribe la oración reescrita", hint: "Revisa la estructura y el tiempo verbal." },
     order: { placeholder: "Escribe la oración ordenada", hint: "Revisa el orden de las palabras." }
   };
+  // Gap items without options (fill in, word bank, study sheets) get a box for the missing words
+  const GAP = { placeholder: "Escribe la respuesta", hint: "Revisa la forma del verbo." };
+  const writeCfg = it => WRITE[current.type] || (current.type !== "match" && !(it.options && it.options.length) ? GAP : null);
   let typed = {};
   const normSentence = s => String(s || "").toLowerCase().replace(/[‘’]/g, "'")
     .replace(/\bcan't\b/g, "cannot").replace(/\bwon't\b/g, "will not").replace(/n't\b/g, " not")
     .replace(/'ve\b/g, " have").replace(/'m\b/g, " am").replace(/'re\b/g, " are").replace(/'ll\b/g, " will")
-    .replace(/[.!?,;:]+/g, "").replace(/\s+/g, " ").trim();
+    .replace(/[.!?,;:\/]+/g, " ").replace(/\s+/g, " ").trim();
   function fixRow(it, i) {
     const row = el("div", "fix");
     row.append(el("div", "fix-q", it.q));
     const box = el("div", "fix-box");
-    const inp = el("input"); inp.type = "text"; inp.id = "fix-" + i; inp.placeholder = WRITE[current.type].placeholder;
-    inp.setAttribute("aria-label", "Oración " + (i + 1) + " corregida");
+    const cfg = writeCfg(it);
+    const inp = el("input"); inp.type = "text"; inp.id = "fix-" + i; inp.placeholder = cfg.placeholder;
+    inp.setAttribute("aria-label", "Respuesta " + (i + 1));
     inp.value = typed[i] || "";
     const chk = el("button", "btn", "Revisar"); chk.type = "button";
     const msg = el("div", "fix-msg");
@@ -890,10 +894,13 @@ a.btn { display: inline-block; text-decoration: none; color: var(--ink); }
       const target = normSentence(it.answer);
       // Rewrite items like "… → I wish ____": also accept just the missing part
       const stem = current.type === "rewrite" && it.q.includes("→") && it.q.includes("____") ? it.q.split("→").pop() : null;
-      const ok = normSentence(v) === target || (stem != null && normSentence(stem.replace(/_{2,}/, v)) === target);
+      // Gap items: also accept the whole sentence written out with the gap filled
+      const bare = cfg === GAP && it.q.includes("____") ? it.q.replace(/\s*\([^)]*\)/, "") : null;
+      const ok = normSentence(v) === target || (stem != null && normSentence(stem.replace(/_{2,}/, v)) === target)
+        || (bare != null && normSentence(v) === normSentence(bare.replace(/_{2,}/, it.answer)));
       inp.className = ok ? "right" : "wrong";
       msg.className = "fix-msg " + inp.className;
-      msg.textContent = ok ? "✓ Correcto" : "✗ Todavía no. " + WRITE[current.type].hint;
+      msg.textContent = ok ? "✓ Correcto" : "✗ Todavía no. " + cfg.hint;
     };
     inp.oninput = () => { typed[i] = inp.value; inp.className = ""; msg.className = "fix-msg"; msg.textContent = ""; };
     inp.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); check(); } };
@@ -916,7 +923,7 @@ a.btn { display: inline-block; text-decoration: none; color: var(--ink); }
     st.append(el("div", "count", `${stageIdx + 1} / ${ws.items.length} · ${ws.title}`));
     if (ws.reading && stageIdx === 0) st.append(el("div", "reading", ws.reading));
     st.append(el("div", "q", it.q));
-    if (WRITE[ws.type]) { const r = fixRow(it, stageIdx); r.firstChild.remove(); st.append(r); }
+    if (writeCfg(it)) { const r = fixRow(it, stageIdx); r.firstChild.remove(); st.append(r); }
     if (it.options && it.options.length) st.append(optionButtons(it, stageShown));
     if (stageShown) st.append(keyBlock(ws.type === "match" ? { answer: it.answer, explanation: it.explanation } : it));
     const nav = el("div", "stage-nav");
@@ -958,6 +965,7 @@ a.btn { display: inline-block; text-decoration: none; color: var(--ink); }
       ws.items.forEach((it, i) => {
         L.push(`${i + 1}. ${it.q}`);
         if (WRITE[ws.type]) L.push("   → ____________________________________________");
+        else if (writeCfg(it) && !it.q.includes("____")) L.push("   → ______________________");
         if (it.options && it.options.length) L.push("   " + it.options.map((o, j) => `${String.fromCharCode(97 + j)}) ${o}`).join("   "));
       });
     }
