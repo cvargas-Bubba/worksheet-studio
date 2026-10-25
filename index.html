@@ -866,7 +866,14 @@ Reply with only a JSON object, with no text before or after it:
 
   /* ============ Firebase: teacher sign-in and the shared library ============ */
   /* The Firebase web config is not secret: Firestore rules decide who can save. */
-  const FIREBASE = null; // pegar aquí la configuración del proyecto de Firebase (ver LEEME.md)
+  const FIREBASE = {
+    apiKey: "AIzaSyCMa3jLr-nTgqZ3QMF5FBP2SvSSdyAc2Jw",
+    authDomain: "worksheet-studio-9ba51.firebaseapp.com",
+    projectId: "worksheet-studio-9ba51",
+    storageBucket: "worksheet-studio-9ba51.firebasestorage.app",
+    messagingSenderId: "52112125278",
+    appId: "1:52112125278:web:15aa51e08d3a0ca6a1b3cf"
+  };
   const FB_VER = "12.19.0";
   const LOCAL_KEY = "ws-biblioteca-local";
 
